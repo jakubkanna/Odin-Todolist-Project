@@ -134,3 +134,15 @@ table {
 :root {
   --body-bg-color: ;
 }
+
+/* fonts */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,900;1,9..144,400;1,9..144,900&family=Inter:wght@300;400;700;800&display=swap");
+html,
+body {
+  font-family: "Fraunces", serif;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  background-color: darkslategray;
+}
