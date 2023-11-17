@@ -1,67 +1,56 @@
-//ui
-
-// create header, main, footer object
 class Element {
-  constructor(tag, selector) {
+  static elements = [];
+
+  constructor(tag, className = null, parent = null) {
     this.tag = tag;
-    this.selector = selector;
-    this.documentNode;
-  }
-
-  create() {
-    this.documentNode = document.createElement(this.tag);
-    if (this.selector !== null) {
-      this.documentNode.className = this.selector;
-    }
-    return this;
-  }
-
-  appendTo(querySelector) {
-    querySelector.appendChild(this.documentNode);
-    return this; // Return the instance for chaining
+    this.className = className;
+    this.parent = parent;
+    Element.elements.push(this);
   }
 }
 
-class ChildElement extends Element {
-  constructor(tag, selector, parentSelector) {
-    super(tag, selector);
-    this.parentSelector = parentSelector;
-  }
+function createElements() {
+  //header
+  const header = new Element("header", "header");
+  header.brandname = new Element("div", "brandname", header);
+  header.burger = new Element("div", "burger-icon", header);
+  //main
+  const main = new Element("main", "primary");
+  main.sidebar = new Element("aside", "sidebar", main);
+  main.container = new Element("div", "container", main);
+  main.container.div = new Element("div", undefined, main.container);
+  //footer
+  const footer = new Element("footer", "colophon");
+  footer.div = new Element("div", undefined, footer);
+}
 
-  appendToParent() {
-    const parentElement = document.querySelector(this.parentSelector);
-    if (parentElement) {
-      console.log("Parent Element Found:", parentElement);
-      return this.appendTo(parentElement);
+function createDOMSkeleton() {
+  createElements();
+
+  let bodyElements = [];
+
+  for (let element of Element.elements) {
+    // Convert element to document node
+    let domNode = document.createElement(element.tag);
+    if (element.className) {
+      domNode.classList.add(element.className);
+    }
+
+    // If the element doesn't have a parent, insert into document.body
+    if (!element.parent) {
+      document.body.appendChild(domNode);
+      bodyElements.push(domNode);
     } else {
-      console.error("Parent Element Not Found");
-      return this;
+      // If the element has a parent, insert into its parent
+      let parentClassName = element.parent.className;
+
+      for (let bodyElement of bodyElements) {
+        if (bodyElement.classList.contains(parentClassName)) {
+          bodyElement.appendChild(domNode);
+        }
+      }
     }
   }
 }
 
-function createHTMLSkeleton() {
-  const header = new Element("header", null).appendTo(document.body);
-  const main = new Element("main", null).appendTo(document.body);
-  const footer = new Element("footer", null).appendTo(document.body);
-
-  const brandname = new ChildElement(
-    "div",
-    "brandname",
-    "header"
-  ).appendToParent();
-  const burger = new ChildElement(
-    "div",
-    "burger-icon",
-    "header"
-  ).appendToParent();
-}
-
-// a. extend header = brandname + burger icon
-// b. extend main =  sidebar + container
-// c. extend footer = div
-// etc.
-
-// create insert function which will insert object into another
-
-export { createHTMLSkeleton };
+export { createDOMSkeleton };

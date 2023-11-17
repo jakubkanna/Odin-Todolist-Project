@@ -7,13 +7,15 @@
  */
 import "./style.css";
 import { createDefault } from "./controller";
-import { createHTMLSkeleton } from "./ui";
+import { createDOMSkeleton } from "./ui";
 
-//if dom is ready
-let user = createDefault();
-console.table(user.projects);
-//
-createHTMLSkeleton();
+document.addEventListener("DOMContentLoaded", () => {
+  let user = createDefault();
+  //   console.table(user.projects);
+  //
+  createDOMSkeleton();
+});
+
 //insert data
 
 // const octicons = require("@primer/octicons");
