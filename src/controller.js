@@ -1,6 +1,7 @@
 //controller for creating users and their projects and tasks
 
 // construct Projects
+
 class Project {
   constructor(name) {
     this.name = name;
@@ -9,6 +10,7 @@ class Project {
 }
 
 // construct Tasks for Projects
+
 class Task {
   constructor(name, date, description, status) {
     this.name = name;
@@ -28,22 +30,16 @@ class User {
   createProject() {
     let name = prompt("Please enter Project name:");
     let project = new Project(name);
-    storeData(this.projects, project);
+    this.projects.push(project);
   }
   createTask() {
-    let id = prompt("Project ID:");
+    let index = prompt("Project index:");
     let name = prompt("Please enter Task name:");
     let date = prompt("Please enter Task date:");
     let description = prompt("Please enter Task description:");
     let task = new Task(name, date, description);
-    this.projects[id].tasks.push(task); //select project and add task to it's arrray
+    if (index !== "") this.projects[index].tasks.push(task); //push task to selected project's tasks array
   }
-}
-
-//
-
-function storeData(array, object) {
-  return array.push(object);
 }
 
 //
