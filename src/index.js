@@ -7,16 +7,11 @@
  */
 import "./style.css";
 import { createDefault } from "./controller";
-import { createDOMSkeleton } from "./ui";
+import { insertDataToHTML } from "./ui";
 
 document.addEventListener("DOMContentLoaded", () => {
-  let user = createDefault();
-  //   console.table(user.projects);
-  //
-  createDOMSkeleton();
+  //get data
+  createDefault();
+  //create html
+  insertDataToHTML();
 });
-
-//insert data
-
-// const octicons = require("@primer/octicons");
-// document.body.innerHTML += octicons.alert.toSVG(16);

@@ -1,33 +1,18 @@
-class Element {
-  constructor(tagName, className, parent) {
-    this.element = document.createElement(tagName);
-    if (className) {
-      this.element.className = className;
-    }
+import { header } from "./modules/components/header";
+import { main } from "./modules/components/main";
+import { footer } from "./modules/components/footer";
 
-    if (parent) {
-      parent.element.appendChild(this.element);
-    } else {
-      document.body.appendChild(this.element);
-    }
-  }
-}
+//
+const octicons = require("@primer/octicons");
 
-function createDOMSkeleton() {
+function insertDataToHTML() {
+  //static
   // Header
-  const header = new Element("header", "header");
-  header.brandname = new Element("div", "brandname", header);
-  header.burger = new Element("div", "burger-icon", header);
-
+  header.brandname.element.innerHTML = "Todolist";
+  header.burger.element.innerHTML = octicons["three-bars"].toSVG({ width: 45 });
   // Main
-  const main = new Element("main", "primary");
-  main.sidebar = new Element("aside", "sidebar", main);
-  main.container = new Element("div", "container", main);
-  main.container.div = new Element("div", undefined, main.container);
-
   // Footer
-  const footer = new Element("footer", "colophon");
-  footer.div = new Element("div", undefined, footer);
+  //dynamic
 }
 
-export { createDOMSkeleton };
+export { insertDataToHTML };

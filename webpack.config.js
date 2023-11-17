@@ -5,11 +5,7 @@ module.exports = {
   entry: {
     app: "./src/index.js",
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: "./src/index.html",
-    }),
-  ],
+  plugins: [new HtmlWebpackPlugin()],
   output: {
     filename: "[name].bundle.js",
     path: path.resolve(__dirname, "dist"),
