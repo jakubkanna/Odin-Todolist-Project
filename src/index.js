@@ -7,11 +7,11 @@
  */
 import "./style.css";
 import { createDefault } from "./controller";
-import { insertDataToHTML } from "./ui";
+import { createHTML } from "./ui";
 
 document.addEventListener("DOMContentLoaded", () => {
   //get data
   createDefault();
   //create html
-  insertDataToHTML();
+  createHTML();
 });

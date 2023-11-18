@@ -5,7 +5,7 @@ import { footer } from "./modules/components/footer";
 //
 const octicons = require("@primer/octicons");
 
-function insertDataToHTML() {
+function createHTML() {
   //static
   // Header
   header.brandname.element.innerHTML = "Todolist";
@@ -15,4 +15,4 @@ function insertDataToHTML() {
   //dynamic
 }
 
-export { insertDataToHTML };
+export { createHTML };
