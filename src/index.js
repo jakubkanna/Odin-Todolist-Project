@@ -1,17 +1,11 @@
-/** Task:
- *  1. Functionality:
- *  view all projects
- *  view all todos in each project (probably just the title and duedate… perhaps changing color for different priorities)
- *  expand a single todo to see/edit its details
- *  delete a todo
- */
+// main script
 import "./style.css";
-import { renderProjects, controlProjects, renderTabs } from "./modules/ui";
+import { ProjectRenderer, ProjectController, TabsRenderer } from "./modules/ui";
 import { createUser } from "./modules/user";
-import { icons } from "./modules/icons";
 
 document.addEventListener("DOMContentLoaded", () => {
   const defaultUser = createUser("Default");
-  renderProjects(defaultUser);
-  controlProjects(defaultUser);
+
+  ProjectRenderer.renderProjects(defaultUser);
+  ProjectController.controlProjects(defaultUser, TabsRenderer.renderTabs);
 });
