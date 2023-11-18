@@ -1,46 +1,56 @@
-// ui.js
 import { addEl } from "./elements";
 
 class ProjectRenderer {
-  static renderProjects(user) {
+  constructor(user) {
+    this.user = user;
+  }
+  renderProjects() {
     const list = document.querySelector(".list-projects");
-    for (let project of user.projects) {
-      let item = addEl("li", "list-item", list);
+    for (let project of this.user.projects) {
+      let item = addEl("li", "list-projects-item", list);
       item.element.innerHTML = `${project.name}`;
-      item.element.setAttribute(
-        "project-id",
-        `${user.projects.indexOf(project)}`
-      );
+      let id = this.user.projects.indexOf(project);
+      item.element.setAttribute("project-id", id);
     }
+  }
+  renderTabs(id) {
+    const projectId = id;
+    const tasks = this.user.projects[projectId].tasks;
+    const container = document.body.querySelector(".tabs");
+    container.innerHTML = ""; // Clear previous tabs
+    tasks.forEach((element) => {
+      const tab = addEl("div", "tab", container);
+      tab.element.innerText = "Tab";
+    });
   }
 }
 
 class ProjectController {
-  static controlProjects(user, renderTabsCallback) {
-    const buttons = document.querySelectorAll(".list-item");
-    let selectedProject = 0; // default
-    buttons.forEach((element) => {
-      element.addEventListener("click", (e) => {
+  constructor(projectRenderer) {
+    this.projectRenderer = projectRenderer;
+    this.selectedProject = 0;
+  }
+  controlProjects() {
+    const buttons = document.querySelectorAll(".list-projects-item");
+    buttons.forEach((button) => {
+      button.addEventListener("click", (e) => {
         const id = e.target.getAttribute("project-id");
-        if (selectedProject !== id) {
-          selectedProject = id;
-          renderTabsCallback(user, selectedProject);
+        if (this.selectedProject !== id) {
+          this.selectedProject = id;
+          console.log(e.target);
+          this.projectRenderer.renderTabs(id); // Render tabs when a project is clicked
         }
       });
     });
   }
 }
 
-class TabsRenderer {
-  static renderTabs(user, projectId) {
-    const tasks = user.projects[projectId].tasks;
-    const container = document.body.querySelector(".tabs");
-    tasks.forEach((element) => {
-      const tab = addEl("div", "tab", container);
-      tab.element.innerText = "sss";
-    });
-    // create and insert tabs for the selected project
-  }
+function createUI(user) {
+  const projectRenderer = new ProjectRenderer(user);
+  const projectController = new ProjectController(projectRenderer);
+
+  projectRenderer.renderProjects();
+  projectController.controlProjects();
 }
 
-export { ProjectRenderer, ProjectController, TabsRenderer };
+export default createUI;
