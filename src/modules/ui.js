@@ -62,6 +62,14 @@ class ProjectCreator extends ProjectRenderer {
   }
 }
 
+class ProjectEditor{
+  //edit project name, date, description, status
+}
+class ProjectReducer{
+  //remove project functionality
+  //remove task functionality
+}
+
 function createUI(user) {
   const projectRenderer = new ProjectRenderer(user);
   const ProjectListHandler = new ProjectController(projectRenderer);
