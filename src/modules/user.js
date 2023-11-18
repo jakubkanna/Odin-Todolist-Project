@@ -1,6 +1,4 @@
-//controller for creating users and their projects and tasks
-
-// construct Projects
+// users has projects, projects has tasks
 
 class Project {
   constructor(name) {
@@ -9,7 +7,7 @@ class Project {
   }
 }
 
-// construct Tasks for Projects
+//
 
 class Task {
   constructor(name, date, description, status) {
@@ -20,7 +18,7 @@ class Task {
   }
 }
 
-// construct User
+// user can create projects and tasks
 
 class User {
   static users = [];
@@ -30,22 +28,17 @@ class User {
     this.projects = [];
     User.users.push(this);
   }
-  createProject() {
-    let name = prompt("Please enter Project name:");
+  createProject(name) {
     let project = new Project(name);
     this.projects.push(project);
   }
-  createTask() {
-    let index = prompt("Project index:");
-    let name = prompt("Please enter Task name:");
-    let date = prompt("Please enter Task date:");
-    let description = prompt("Please enter Task description:");
-    let task = new Task(name, date, description);
-    if (index !== "") this.projects[index].tasks.push(task); //push task to selected project's tasks array
+  createTask(projectIndex, name, date, description, status) {
+    let task = new Task(name, date, description, status);
+    if (index !== "") this.projects[index].tasks.push(task);
   }
 }
 
-//
+// create users with default values
 
 function createUser(name) {
   const defaultProject = new Project("Default");
@@ -56,6 +49,7 @@ function createUser(name) {
       "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.",
     status: undefined,
   });
+  
   defaultProject.tasks.push(defaultTask);
 
   const user = new User(`${name}`);
