@@ -13,7 +13,7 @@ class ProjectRenderer {
       item.element.setAttribute("project-id", id);
     }
   }
-  renderTabs(id) {
+  renderProjectTasks(id) {
     const projectId = id;
     const tasks = this.user.projects[projectId].tasks;
     const container = document.body.querySelector(".tabs");
@@ -25,7 +25,7 @@ class ProjectRenderer {
   }
 }
 
-class ProjectController {
+class ProjectListHandler {
   constructor(projectRenderer) {
     this.projectRenderer = projectRenderer;
     this.selectedProject = 0;
@@ -38,16 +38,33 @@ class ProjectController {
         if (this.selectedProject !== id) {
           this.selectedProject = id;
           console.log(e.target);
-          this.projectRenderer.renderTabs(id); // Render tabs when a project is clicked
+          this.projectRenderer.renderProjectTasks(id); // Render tabs when a project is clicked
         }
       });
     });
   }
 }
 
+class ProjectCreator extends ProjectRenderer {
+  ProjectFormHandler(){
+    //if button has been clicked
+    //show window with form
+    //get form data on OK click
+    //pass values to user.createProject();
+    //render projects
+  }
+  TaskFormHandler(){
+     //if button has been clicked
+    //show window with form
+    //get form data on OK click
+    //pass values to user.createTask();
+    //render tasks
+  }
+}
+
 function createUI(user) {
   const projectRenderer = new ProjectRenderer(user);
-  const projectController = new ProjectController(projectRenderer);
+  const ProjectListHandler = new ProjectController(projectRenderer);
 
   projectRenderer.renderProjects();
   projectController.controlProjects();
