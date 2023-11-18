@@ -45,29 +45,33 @@ class ProjectListHandler {
   }
 }
 
-class ProjectCreator extends ProjectRenderer {
-  ProjectFormHandler(){
-    //if button has been clicked
-    //show window with form
-    //get form data on OK click
-    //pass values to user.createProject();
-    //render projects
+class ProjectCreator {
+  constructor(user) {
+    super(user);
   }
-  TaskFormHandler(){
-     //if button has been clicked
-    //show window with form
-    //get form data on OK click
-    //pass values to user.createTask();
-    //render tasks
+
+  showProjectForm() {
+    // Implementation for showing project form
+  }
+
+  showTaskForm() {
+    // Implementation for showing task form
+  }
+
+  createProject(formData) {
+    // Implementation for creating a project
+  }
+
+  createTask(formData) {
+    // Implementation for creating a task
   }
 }
 
-class ProjectEditor{
-  //edit project name, date, description, status
+class ProjectEditor {
+  // Implementation for editing project details
 }
-class ProjectReducer{
-  //remove project functionality
-  //remove task functionality
+class ProjectReducer {
+  // Implementation for removing projects and tasks
 }
 
 function createUI(user) {
