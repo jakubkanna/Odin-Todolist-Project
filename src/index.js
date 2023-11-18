@@ -6,12 +6,12 @@
  *  delete a todo
  */
 import "./style.css";
-import { createDefault } from "./controller";
-import { createHTML } from "./ui";
+import { renderProjects, controlProjects, renderTabs } from "./modules/ui";
+import { createUser } from "./modules/user";
+import { icons } from "./modules/icons";
 
 document.addEventListener("DOMContentLoaded", () => {
-  //get data
-  createDefault();
-  //create html
-  createHTML();
+  const defaultUser = createUser("Default");
+  renderProjects(defaultUser);
+  controlProjects(defaultUser);
 });

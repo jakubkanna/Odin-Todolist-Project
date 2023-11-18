@@ -23,9 +23,12 @@ class Task {
 // construct User
 
 class User {
+  static users = [];
+
   constructor(nick) {
     this.nick = nick;
     this.projects = [];
+    User.users.push(this);
   }
   createProject() {
     let name = prompt("Please enter Project name:");
@@ -44,7 +47,7 @@ class User {
 
 //
 
-function createDefault() {
+function createUser(name) {
   const defaultProject = new Project("Default");
   const defaultTask = new Task({
     name: "Example Task",
@@ -53,12 +56,12 @@ function createDefault() {
       "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.",
     status: undefined,
   });
-
-  const defaultUser = new User("Undefined");
   defaultProject.tasks.push(defaultTask);
-  defaultUser.projects.push(defaultProject);
 
-  return defaultUser;
+  const user = new User(`${name}`);
+  user.projects.push(defaultProject);
+
+  return user;
 }
 
-export { createDefault };
+export { createUser };

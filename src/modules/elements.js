@@ -6,7 +6,7 @@ class Element {
     }
 
     if (parent) {
-      parent.element.appendChild(this.element);
+      parent.appendChild(this.element);
     } else {
       document.body.appendChild(this.element);
     }

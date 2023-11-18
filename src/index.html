@@ -1,0 +1,108 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Webpack App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="brandname">Todolist</div>
+      <div class="burger-icon"></div>
+    </header>
+    <main class="primary">
+      <aside class="sidebar">
+        <div class="menu">
+          <h1>Projects</h1>
+          <div class="projects">
+            <p>Project List:</p>
+            <ul class="list-projects">
+              <!-- user projects -->
+            </ul>
+          </div>
+          <div class="projects-window">
+            <button type="button" class="add">Create new project</button>
+
+            <div class="box">
+              <div class="box-header">
+                <h2>New Project</h2>
+                <button type="button" class="close">
+                  <!--icon-->
+                </button>
+              </div>
+              <div class="box-body">
+                <form>
+                  <input type="text" name="project_name" id="project-name" />
+                </form>
+              </div>
+              <div class="box-footer">
+                <button type="submit">OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+      <div class="container">
+        <div class="dropdown">
+          <span>Filter for:</span>
+          dropdown
+        </div>
+        <div>
+          <h1>Tasks</h1>
+          <p class="info">for...</p>
+        </div>
+        <div class="container">
+          <div class="tasks-window">
+            <div>
+              <button type="button" class="add">Create new task for ...</button>
+            </div>
+            <div>
+              <div class="box">
+                <div class="box-header">
+                  <h2>New task</h2>
+                  <button type="button" class="close">
+                    <!--icon-->
+                  </button>
+                </div>
+                <div class="box-body">
+                  <form>
+                    <input
+                      type="text"
+                      name="task_name"
+                      id="task-name"
+                      placeholder="Task Name" />
+                    <input
+                      type="text"
+                      name="task_date"
+                      id="task-date"
+                      placeholder="Task Date" />
+                    <input
+                      type="text"
+                      name="task_note"
+                      id="task-note"
+                      placeholder="Task Note" />
+
+                    <div class="important-question">
+                      <p>Is this important?</p>
+                      <input type="button" value="Yes" />
+                      <input type="button" value="No" />
+                    </div>
+                  </form>
+                </div>
+                <div class="box-footer">
+                  <button type="submit">OK</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tabs"></div>
+        </div>
+      </div>
+    </main>
+    <footer class="colophon">
+      <div class="signature">
+        <a href="http://jakubkanna.github.io/jakubkanna">jakubkanna</a>
+      </div>
+    </footer>
+    <script src="app.bundle.js"></script>
+  </body>
+</html>
