@@ -4,6 +4,7 @@ class ProjectRenderer {
   constructor(user) {
     this.user = user;
   }
+
   renderProjects() {
     const list = document.querySelector(".list-projects");
     for (let project of this.user.projects) {
