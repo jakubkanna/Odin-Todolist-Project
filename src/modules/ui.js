@@ -45,25 +45,23 @@ class ProjectListHandler {
   }
 }
 
-class ProjectCreator {
+class name extends ProjectRenderer {
   constructor(user) {
     super(user);
   }
 
-  showProjectForm() {
-    // Implementation for showing project form
+}
+class FormWindowHandler{
+  constructor(form){
+    this.form = form
+    this.buttons = document.querySelectorAll([class^=form-button]);
+  showForm(){
+    this.buttons.forEach((button)=>{
+      //open form assigned to button
+    })
   }
-
-  showTaskForm() {
-    // Implementation for showing task form
-  }
-
-  createProject(formData) {
-    // Implementation for creating a project
-  }
-
-  createTask(formData) {
-    // Implementation for creating a task
+  hideForm(){
+    
   }
 }
 
