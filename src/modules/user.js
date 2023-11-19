@@ -10,11 +10,12 @@ class Project {
 //
 
 class Task {
-  constructor(name, date, description, status) {
+  constructor(name, date, description, status, priority) {
     this.name = name;
     this.date = date;
     this.description = description;
     this.status = status;
+    this.priority = priority;
   }
 }
 
@@ -32,9 +33,15 @@ class User {
     let project = new Project(name);
     this.projects.push(project);
   }
-  createTask(projectIndex, name, date, description, status) {
-    let task = new Task(name, date, description, status);
-    if (index !== "") this.projects[index].tasks.push(task);
+  createTask(projectIndex, name, date, description, status, priority) {
+    let task = new Task(name, date, description, status, priority);
+    this.projects[projectIndex].tasks.push(task);
+  }
+  removeProject(projectIndex) {
+    this.projects.splice(projectIndex, 1);
+  }
+  removeTask(projectIndex, taskIndex) {
+    this.projects[projectIndex].tasks.splice(taskIndex, 1);
   }
 }
 
@@ -48,8 +55,9 @@ function createUser(name) {
     description:
       "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.",
     status: undefined,
+    priority: undefined,
   });
-  
+
   defaultProject.tasks.push(defaultTask);
 
   const user = new User(`${name}`);

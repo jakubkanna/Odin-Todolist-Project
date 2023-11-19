@@ -171,17 +171,3 @@ main {
 .container {
   width: 100%;
 }
-.tasks-window {
-  display: flex;
-}
-div.tasks-window > div:nth-child(1),
-div.tasks-window > div:nth-child(2) {
-  width: 50%;
-}
-.box-header {
-  display: flex;
-}
-.box-body > form {
-  display: flex;
-  flex-direction: column;
-}

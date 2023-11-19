@@ -13,4 +13,5 @@ import { icons } from "./modules/icons";
 document.addEventListener("DOMContentLoaded", () => {
   const defaultUser = createUser("Default");
   createUI(defaultUser);
+  //store data
 });
