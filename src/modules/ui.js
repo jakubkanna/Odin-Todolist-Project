@@ -1,5 +1,3 @@
-import { addEl } from "./elements";
-
 class ProjectRenderer {
   constructor(user) {
     this.user = user;
@@ -7,7 +5,10 @@ class ProjectRenderer {
   renderProjects() {
     const list = document.querySelector(".list-projects");
     for (let project of this.user.projects) {
-      let item = addEl("li", "list-projects-item", list);
+      //create item
+      let item = document.createElement("li");
+      item.className = "list-projects-item";
+      list.appendChild(item);
       item.element.innerHTML = `${project.name}`;
       let id = this.user.projects.indexOf(project);
       item.element.setAttribute("project-id", id);
@@ -19,7 +20,10 @@ class ProjectRenderer {
     const container = document.body.querySelector(".tabs");
     container.innerHTML = ""; // Clear previous tabs
     tasks.forEach((element) => {
-      const tab = addEl("div", "tab", container);
+      //create tab
+      const tab = document.createElement("div");
+      tab.className = "tab";
+      container.appendChild(tab);
       tab.element.innerText = "Tab";
     });
   }
