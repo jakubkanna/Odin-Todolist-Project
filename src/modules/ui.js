@@ -1,162 +1,95 @@
+import { WindowButtonHandler, ProjectListHandler } from "./ui-modules/buttons";
+import { Form, FormHandler } from "./ui-modules/forms";
+
 class ProjectRenderer {
   constructor(user) {
     this.user = user;
-  }
-  renderProjects() {
-    const list = document.querySelector(".list-projects");
-    for (let project of this.user.projects) {
-      //create item
-      let item = document.createElement("li");
-      item.className = "list-projects-item";
-      list.appendChild(item);
-      item.element.innerHTML = `${project.name}`;
-      let id = this.user.projects.indexOf(project);
-      item.element.setAttribute("project-id", id);
-    }
-  }
-  renderProjectTasks(id) {
-    const projectId = id;
-    const tasks = this.user.projects[projectId].tasks;
-    const container = document.body.querySelector(".tabs");
-    container.innerHTML = ""; // Clear previous tabs
-    tasks.forEach((element) => {
-      //create tab
-      const tab = document.createElement("div");
-      tab.className = "tab";
-      container.appendChild(tab);
-      tab.element.innerText = "Tab";
-    });
+    this.list = renderProjects(this.user);
   }
 }
 
-class ProjectListHandler {
-  constructor(projectRenderer) {
-    this.projectRenderer = projectRenderer;
-    this.selectedProject = 0;
+function renderProjects(user, projectID) {
+  const list = document.querySelector(".list-projects");
+  list.innerHTML = "";
+  for (let project of user.projects) {
+    const item = createDOMElement(
+      "li",
+      "list-projects-item",
+      list,
+      project.name
+    );
+    let id = user.projects.indexOf(project);
+    item.setAttribute("project-id", id);
   }
-  controlProjects() {
-    const buttons = document.querySelectorAll(".list-projects-item");
-    buttons.forEach((button) => {
-      button.addEventListener("click", (e) => {
-        const id = e.target.getAttribute("project-id");
-        if (this.selectedProject !== id) {
-          this.selectedProject = id;
-          this.projectRenderer.renderProjectTasks(id); // Render tabs when a project is clicked
-        }
-      });
-    });
-  }
+
+  return list;
+}
+
+function renderProjectTasks(user, projectID) {
+  const tasks = user.projects[projectID].tasks;
+  const container = document.body.querySelector(".tabs");
+  container.innerHTML = ""; // Clear previous tabs
+  console.log(tasks);
+  tasks.forEach(() => {
+    createDOMElement("div", "tab", container, createTabElement());
+  });
+}
+
+function createTabElement() {
+  let tab = "Heym";
+  return tab;
+}
+
+function createDOMElement(tag, className, parent, innerHTML) {
+  let item = document.createElement(tag);
+  item.className = className;
+  parent.appendChild(item);
+  item.innerHTML = innerHTML;
+  return item;
 }
 
 //
-
-class WindowButtonHandler {
-  constructor(button, box) {
-    this.button = document.querySelector(button);
-    this.box = document.body.querySelector(box);
-    this.isVisible = true;
-    this.button.addEventListener("click", () => {
-      this.toggleForm();
-    });
-  }
-  toggleForm() {
-    if (this.isVisible) {
-      this.hideForm();
-    } else {
-      this.showForm();
-    }
-  }
-  showForm() {
-    this.box.style.display = "block";
-    this.isVisible = true;
-  }
-  hideForm() {
-    this.box.style.display = "none";
-    this.isVisible = false;
-  }
-}
-
-// filter tasks by date
-
-//
-
-class Form {
-  constructor(form) {
-    this.form = form;
-  }
-}
-
-class FormDataGetter extends Form {
-  constructor(form) {
-    super(form);
-    this.data;
-  }
-  getData() {
-    // Implement logic to get form data
-  }
-}
-
-class FormDataProcessor {
-  constructor(user, data) {
-    this.user = user;
-    this.data = data;
-  }
-  createNewProject() {
-    // Implement project creation logic using this.user.createProject()
-  }
-
-  createNewTask() {
-    // Implement task creation logic using this.user.createTask()
-  }
-}
-
-class FormSubmitHandler extends Form {
-  constructor(renderer, form, submitButton) {
-    super(form);
-    // Constructor logic
-  }
-
-  renderNewProject() {
-    // Implement logic to render new project
-  }
-
-  renderNewTask() {
-    // Implement logic to render new task
-  }
-}
 
 //settings
 //set status
 //set priority
 //edit data
 //remove project/task
-class ProjectSettings {
-  constructor(project) {
-    this.form = form;
-  }
-}
 
 function createUI(user) {
-  //
-  const projectRenderer = new ProjectRenderer(user);
-  projectRenderer.renderProjects();
+  const renderer = new ProjectRenderer(user);
+  const projectListHandler = new ProjectListHandler(renderer);
+  const getProjectID = () => projectListHandler.projectID;
 
-  const projectListHandler = new ProjectListHandler(projectRenderer);
-  projectListHandler.controlProjects();
-  //
+  projectListHandler.setActive();
+  renderProjectTasks(user, getProjectID()); //default (id:0)
+
+  projectListHandler.handleSelected(renderProjectTasks);
+
+  //handle "create new" buttons
+
   const projectWindowHandler = new WindowButtonHandler(
     ".new-project-button",
-    ".new-project-box"
+    ".new-projects-box"
   );
   const taskWindowHandler = new WindowButtonHandler(
     ".new-task-button",
     ".new-task-box"
   );
-  //call filter
 
-  //call form
+  // create form
 
-  //call settigns
+  const taskForm = new Form(".new-tasks-window form");
+  const projectForm = new Form(".new-projects-window form");
+
+  //control forms
+
+  const taskFormHandler = new FormHandler(taskForm.form);
+  taskFormHandler.controlRadioButtons();
+  taskFormHandler.controlFormSubmit(user, getProjectID, renderProjectTasks);
+
+  const projectFormHandler = new FormHandler(projectForm.form);
+  projectFormHandler.controlFormSubmit(user, getProjectID, renderProjects);
 }
 
 export default createUI;

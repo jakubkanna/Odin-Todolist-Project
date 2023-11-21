@@ -48,20 +48,19 @@ class User {
 // create users with default values
 
 function createUser(name) {
-  const defaultProject = new Project("Default");
-  const defaultTask = new Task({
-    name: "Example Task",
-    date: "01/01/2001",
-    description:
-      "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.",
-    status: undefined,
-    priority: undefined,
-  });
-
-  defaultProject.tasks.push(defaultTask);
-
   const user = new User(`${name}`);
-  user.projects.push(defaultProject);
+
+  user.createProject("Default");
+  user.createProject("Default2");
+
+  user.createTask(
+    0,
+    "Example Task",
+    "01/01/2001",
+    "Description",
+    undefined,
+    undefined
+  );
 
   return user;
 }
