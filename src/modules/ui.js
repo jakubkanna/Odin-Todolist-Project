@@ -1,5 +1,6 @@
 import { WindowButtonHandler, ProjectListHandler } from "./ui-modules/buttons";
 import { Form, FormHandler } from "./ui-modules/forms";
+import Element from "./ui-modules/element"; //class for quick making DOM el
 
 class ProjectRenderer {
   constructor(user) {
@@ -12,16 +13,11 @@ function renderProjects(user, projectID) {
   const list = document.querySelector(".list-projects");
   list.innerHTML = "";
   for (let project of user.projects) {
-    const item = createDOMElement(
-      "li",
-      "list-projects-item",
-      list,
-      project.name
-    );
+    const item = new Element("li", "list-projects-item", list);
+    item.element.innerText = project.name;
     let id = user.projects.indexOf(project);
-    item.setAttribute("project-id", id);
+    item.element.setAttribute("project-id", id);
   }
-
   return list;
 }
 
@@ -30,24 +26,40 @@ function renderProjectTasks(user, projectID) {
   const container = document.body.querySelector(".tabs");
   container.innerHTML = ""; // Clear previous tabs
   console.log(tasks);
-  tasks.forEach(() => {
-    createDOMElement("div", "tab", container, createTabElement());
+  tasks.forEach((task) => {
+    let tab = new Element(
+      "div",
+      `tab-${projectID}`,
+      container,
+      createTabElement(task)
+    );
+    controlTabSettings(task, tab.element);
   });
 }
 
-function createTabElement() {
-  let tab = "Heym";
-  return tab;
+function createTabElement(task) {
+  const title = new Element("h2", "task-name");
+  title.element.innerHTML = task.name;
+
+  const date = new Element("p", "task-deadline");
+  date.element.innerHTML = task.date;
+
+  const settings = new Element("div", "task-settings");
+  settings.element.innerHTML = "settings";
+
+  const note = new Element("div", "task-note");
+  note.element.innerHTML = task.description;
+
+  return [title.element, date.element, settings.element, note.element];
 }
 
-function createDOMElement(tag, className, parent, innerHTML) {
-  let item = document.createElement(tag);
-  item.className = className;
-  parent.appendChild(item);
-  item.innerHTML = innerHTML;
-  return item;
+function controlTabSettings(task, tab) {
+  if (task.status === "yes") {
+    tab.classList.add("important");
+  }
 }
 
+function handleTabSettings() {}
 //
 
 //settings
