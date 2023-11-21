@@ -8,7 +8,7 @@
 import "./style.css";
 import createUI from "./modules/ui";
 import { createUser } from "./modules/user";
-import { icons } from "./modules/icons";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 document.addEventListener("DOMContentLoaded", () => {
   const defaultUser = createUser("Default");

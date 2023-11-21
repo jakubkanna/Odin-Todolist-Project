@@ -40,13 +40,18 @@ function renderProjectTasks(user, projectID) {
 function createTabElement(task) {
   const title = new Element("h2", "task-name");
   title.element.innerHTML = task.name;
-
+  //
   const date = new Element("p", "task-deadline");
   date.element.innerHTML = task.date;
-
+  //
   const settings = new Element("div", "task-settings");
-  settings.element.innerHTML = "settings";
-
+  const check = new Element("button", "bi bi-check-lg");
+  settings.element.appendChild(check.element);
+  const edit = new Element("button", "bi bi-pencil");
+  settings.element.appendChild(edit.element);
+  const close = new Element("button", "bi bi-x-lg");
+  settings.element.appendChild(close.element);
+  //
   const note = new Element("div", "task-note");
   note.element.innerHTML = task.description;
 
