@@ -24,6 +24,7 @@ class WindowButtonHandler {
     this.isVisible = false;
   }
 }
+
 class ProjectListHandler {
   constructor(ProjectRenderer) {
     this.user = ProjectRenderer.user;

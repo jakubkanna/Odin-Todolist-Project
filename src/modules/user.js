@@ -58,8 +58,8 @@ function createUser(name) {
     "Example Task",
     "01/01/2001",
     "Description",
-    "yes",
-    undefined
+    undefined,
+    "yes"
   );
 
   return user;
