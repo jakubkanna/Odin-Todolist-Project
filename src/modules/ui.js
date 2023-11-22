@@ -1,39 +1,66 @@
-import { WindowButtonHandler, ProjectListHandler } from "./ui-modules/buttons";
+import { ExpandWinBtnHandler, ProjectListHandler } from "./ui-modules/buttons";
 import { Form, FormHandler } from "./ui-modules/forms";
-import createTab from "./ui-modules/tab";
+import { ProjectRenderer, renderProjectTasks } from "./renderers";
 
-class ProjectRenderer {
-  constructor(user) {
-    this.user = user;
-    this.list = this.renderProjects(this.user);
-  }
-  renderProjects(user) {
-    const list = document.querySelector(".list-projects");
-    list.innerHTML = "";
-    for (let project of user.projects) {
-      let id = user.projects.indexOf(project);
-      createLIElement(project, list, id);
-    }
-    return list;
-  }
-}
-function createLIElement(project, parent, id) {
-  const item = document.createElement("li");
-  item.classList.add("list-projects-item");
-  parent.appendChild(item);
-  item.innerText = project.name;
-  item.setAttribute("project-id", id);
+function createButtonHandlers() {
+  return [
+    new CheckButtonHandler("checkbutton"),
+    new EditButtonHandler("editbutton"),
+    new CloseButtonHandler("closebutton"),
+  ];
 }
 
-function renderProjectTasks(user, projectID) {
-  const tasks = user.projects[projectID].tasks;
-  const container = document.body.querySelector(".tasks");
-  container.innerHTML = ""; // Clear previous tabs
-  tasks.forEach((task, index) => {
-    let tab = createTab(task, index);
-    container.appendChild(tab);
-    tab.setAttribute("project-id", `${projectID}`);
+function handleTaskButtons(user, className) {
+  const buttonHandlers = createButtonHandlers();
+  const buttons = document.querySelectorAll(`${className} .task button`);
+
+  buttons.forEach((element) => {
+    element.addEventListener("click", (event) => {
+      const taskElement = event.target.closest(".task");
+
+      let projectID = taskElement.getAttribute("project-id");
+
+      let tasks = user.projects[projectID].tasks;
+      const taskID = taskElement.getAttribute("data-task-id");
+      const task = tasks[taskID];
+
+      const buttonType = event.target.getAttribute("data-action");
+      const handler = buttonHandlers.find((h) => h.type === buttonType);
+
+      if (handler) {
+        handler.handleClick(task, taskElement);
+      } else {
+        console.log("No handler found for the button type:", buttonType);
+      }
+    });
   });
+}
+class ButtonHandler {
+  constructor(type) {
+    this.type = type;
+  }
+}
+class CheckButtonHandler extends ButtonHandler {
+  handleClick(task, taskElement) {
+    console.log(task);
+    task.status = !task.status;
+    if (task.status) {
+      taskElement.classList.add("important");
+    } else {
+      taskElement.classList.remove("important");
+    }
+  }
+}
+class EditButtonHandler extends ButtonHandler {
+  handleClick() {
+    console.log("Edit button clicked");
+  }
+}
+
+class CloseButtonHandler extends ButtonHandler {
+  handleClick() {
+    console.log("Close button clicked");
+  }
 }
 
 function createUI(user) {
@@ -46,14 +73,14 @@ function createUI(user) {
 
   renderProjectTasks(user, getProjectID()); //default (id:0)
 
-  projectListHandler.handleSelected(renderProjectTasks);
+  projectListHandler.handleListItemClick(renderProjectTasks);
 
   //handle "create new" buttons
 
-  new WindowButtonHandler(".new-project-button", ".new-projects-box");
-  new WindowButtonHandler(".new-task-button", ".new-task-box");
+  new ExpandWinBtnHandler(".new-project-button", ".new-projects-box");
+  new ExpandWinBtnHandler(".new-task-button", ".new-task-box");
 
-  // create form
+  // declare form
 
   const taskForm = new Form(".new-tasks-window form");
   const projectForm = new Form(".new-projects-window form");
@@ -70,25 +97,9 @@ function createUI(user) {
     getProjectID,
     renderer.renderProjects
   );
+
+  //
+  handleTaskButtons(user, ".tasks");
 }
 
 export default createUI;
-//
-// const date = new Element("p", "task-deadline");
-// if (task.date) {
-//   date.element.innerHTML = task.date;
-// }
-// //
-// const settings = new Element("div", "task-settings");
-// const check = new Element("button", "bi bi-check-lg");
-// settings.element.appendChild(check.element);
-// const edit = new Element("button", "bi bi-pencil");
-// settings.element.appendChild(edit.element);
-// const close = new Element("button", "bi bi-x-lg");
-// settings.element.appendChild(close.element);
-// //
-// const note = new Element("div", "task-note");
-// if (task.description) {
-//   note.element.innerHTML = task.description;
-// }
-// return [title.element, date.element, settings.element, note.element];

@@ -1,4 +1,4 @@
-class WindowButtonHandler {
+class ExpandWinBtnHandler {
   constructor(button, box) {
     this.button = document.querySelector(button);
     this.box = document.body.querySelector(box);
@@ -32,7 +32,7 @@ class ProjectListHandler {
     this.projectID = 0;
   }
 
-  handleSelected(renderProjectTasks) {
+  handleListItemClick(renderProjectTasks) {
     this.container.addEventListener("click", (event) => {
       const clickedItem = event.target.closest(".list-projects-item");
       if (clickedItem) {
@@ -61,4 +61,4 @@ class ProjectListHandler {
   }
 }
 
-export { WindowButtonHandler, ProjectListHandler };
+export { ExpandWinBtnHandler, ProjectListHandler };

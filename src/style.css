@@ -139,6 +139,9 @@ table {
 a {
   color: var(--text-color);
 }
+.important {
+  background-color: aqua;
+}
 html,
 body {
   color: var(--text-color) !important;

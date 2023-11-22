@@ -1,20 +1,24 @@
-export default function createTab(task, index) {
+// Handle DOM related stuff for tasks
+
+function createTabElement(task, index) {
   const div = document.createElement("div");
-  div.classList.add(`task-${index}`);
-  appendChildrens(div, task);
+  div.classList.add(`task`);
+  div.setAttribute("data-task-id", `${index}`);
+  appendChildrens(div, task, index);
   return div;
 }
 
-function appendChildrens(element, task) {
-  const title = new TabTitle(task.name);
-  const date = new TabDate(task.date);
-  const settings = new TabSettings();
-  const note = new TabNote(task.description);
+function appendChildrens(element, task, index) {
+  const tabs = [
+    new TabTitle(task.name),
+    new TabDate(task.date),
+    new TabSettings(index),
+    new TabNote(task.description),
+  ];
 
-  element.appendChild(title.element);
-  element.appendChild(date.element);
-  element.appendChild(settings.element);
-  element.appendChild(note.element);
+  tabs.forEach((tab) => {
+    element.appendChild(tab.element);
+  });
 }
 
 class TabChildElement {
@@ -22,6 +26,7 @@ class TabChildElement {
     this.element = document.createElement(tag);
     this.element.classList.add(className);
   }
+
   setText(text) {
     this.element.innerText = text;
   }
@@ -40,21 +45,33 @@ class TabDate extends TabChildElement {
     this.setText(text);
   }
 }
+
 class TabSettings extends TabChildElement {
-  constructor() {
+  constructor(index) {
     super("div", "task-settings");
+    this.index = index;
     this.createButtons();
   }
-  createButtons() {
-    const checkButton = new CheckButton();
-    const editButton = new EditButton();
-    const closeButton = new CloseButton();
 
-    this.element.appendChild(checkButton.element);
-    this.element.appendChild(editButton.element);
-    this.element.appendChild(closeButton.element);
+  createButtons() {
+    const buttons = [
+      new CheckButton(),
+      new EditButton(),
+      new CloseButton(),
+      // new ImportantButton(),
+    ];
+
+    buttons.forEach((button) => {
+      button.element.setAttribute(
+        "data-action",
+        button.constructor.name.toLowerCase()
+      );
+      button.element.setAttribute("data-task-id", `${this.index}`);
+      this.element.appendChild(button.element);
+    });
   }
 }
+
 class TabNote extends TabChildElement {
   constructor(text) {
     super("div", "task-note");
@@ -62,30 +79,34 @@ class TabNote extends TabChildElement {
   }
 }
 
-class Button {
-  constructor(tag, className) {
+class TabButton {
+  constructor(tag, ...classNames) {
     this.element = document.createElement(tag);
-    this.element.classList.add(className);
-    this.element.addEventListener("click", (event) => {
-      this.handleClick();
-    });
+    classNames.forEach((className) => this.element.classList.add(className));
   }
 }
-class CheckButton extends Button {
+
+class CheckButton extends TabButton {
   constructor() {
-    super("button", ("bi", "bi-check-lg"));
-  }
-  handleClick() {
-    console.log("get task.status");
+    super("button", "bi", "bi-check-lg");
   }
 }
-class EditButton extends Button {
+
+class EditButton extends TabButton {
   constructor() {
-    super("button", ("bi", "bi-pencil"));
+    super("button", "bi", "bi-pencil");
   }
 }
-class CloseButton extends Button {
+
+class CloseButton extends TabButton {
   constructor() {
-    super("button", ("bi", "bi-x-lg"));
+    super("button", "bi", "bi-x-lg");
   }
 }
+class ImportantButton extends TabButton {
+  constructor() {
+    super("button", "bi", "bi-exclamation-lg");
+  }
+}
+
+export { createTabElement };

@@ -11,7 +11,7 @@ import { createUser } from "./modules/user";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const defaultUser = createUser("Default");
+  window.defaultUser = createUser("Default");
   createUI(defaultUser);
   //store data
 });
