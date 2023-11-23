@@ -14,18 +14,18 @@ export default class Controller {
   init() {
     this.ui.init();
   }
-
   getProjects() {
     return this.projects;
   }
-
   getTasks() {
     return this.tasks;
   }
-
   setCurrentProject(id) {
     this.currentProject = this.projects[id];
     this.tasks = this.currentProject.tasks;
+  }
+  setCurrentTask(task){
+    this.currentTask = task;
   }
   getCurrentProject() {
     return this.currentProject;
