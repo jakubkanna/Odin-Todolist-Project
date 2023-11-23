@@ -11,7 +11,7 @@ import {
 } from "./createtabelement-modules/TabChildElement";
 import validateParameter from "../validators/validateParam";
 
-export default function createTaskTabElement(task, controller) {
+export default function createTaskTabElement() {
   class TaskTabElement {
     constructor() {
       validateParameter(task, "id", "projectID");
