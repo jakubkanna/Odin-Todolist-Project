@@ -8,7 +8,7 @@ class UI {
     this.projectListUlEl = document.querySelector("ul.list-projects");
     this.projectTaskContainer = document.querySelector(".tasks");
     this.controller;
-    console.log(controller); //undefined
+    console.log(this.controller); //undefined
   }
 
   init() {
