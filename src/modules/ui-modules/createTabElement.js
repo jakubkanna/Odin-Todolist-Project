@@ -12,6 +12,7 @@ import {
 import validateParameter from "../validators/validateParam";
 
 export default function createTaskTabElement() {
+  console.log(this.controller);
   class TaskTabElement {
     constructor() {
       validateParameter(task, "id", "projectID");
