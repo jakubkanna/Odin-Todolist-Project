@@ -1,16 +1,19 @@
-// users has projects, projects has tasks
-
 class Project {
+  static projectIdCounter = 0;
+
   constructor(name) {
+    this.id = Project.projectIdCounter++;
     this.name = name;
     this.tasks = [];
   }
 }
 
-//
-
 class Task {
-  constructor(name, date, description, status, priority) {
+  static taskIdCounter = 0;
+
+  constructor(projectID, name, date, description, status, priority) {
+    this.id = Task.taskIdCounter++;
+    this.projectID = projectID;
     this.name = name;
     this.date = date;
     this.description = description;
@@ -19,9 +22,7 @@ class Task {
   }
 }
 
-// user can create projects and tasks
-
-class User {
+export default class User {
   static users = [];
 
   constructor(nick) {
@@ -29,33 +30,22 @@ class User {
     this.projects = [];
     User.users.push(this);
   }
+
   createProject(name) {
     let project = new Project(name);
     this.projects.push(project);
   }
-  createTask(projectIndex, name, date, description, status = false, priority) {
-    let task = new Task(name, date, description, status, priority);
-    this.projects[projectIndex].tasks.push(task);
+
+  createTask(projectID, name, date, description, status = false, priority) {
+    let task = new Task(projectID, name, date, description, status, priority);
+    this.projects[projectID].tasks.push(task);
   }
-  removeProject(projectIndex) {
-    this.projects.splice(projectIndex, 1);
+
+  removeProject(projectID) {
+    this.projects.splice(projectID, 1);
   }
-  removeTask(projectIndex, taskIndex) {
-    this.projects[projectIndex].tasks.splice(taskIndex, 1);
+
+  removeTask(projectID, taskIndex) {
+    this.projects[projectID].tasks.splice(taskIndex, 1);
   }
 }
-
-// create users with default values
-
-function createUser(name) {
-  const user = new User(`${name}`);
-
-  user.createProject("Default");
-  user.createProject("Default2");
-
-  user.createTask(0, "Example Task", "01/01/2001", "Description", false, "yes");
-
-  return user;
-}
-
-export { createUser };
