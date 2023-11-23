@@ -1,5 +1,7 @@
 import createProjectLiEl from "./ui-modules/createListItemElement";
 import createTaskTabEl from "./ui-modules/createTabElement";
+import { ExpandWinBtnHandler } from "./ui-modules/handlers";
+import Form from "./ui-modules/forms";
 
 class UI {
   constructor() {
@@ -11,6 +13,7 @@ class UI {
   init() {
     this.renderProjects();
     this.renderTasks();
+    this.handleDOM();
   }
 
   renderProjects() {
@@ -32,9 +35,18 @@ class UI {
     const tasks = this.controller.getTasks();
     for (let i = 0; i < tasks.length; i++) {
       let task = tasks[i];
-      let element = createTaskTabEl(task);
+      let element = createTaskTabEl(task, this.controller);
       this.projectTaskContainer.appendChild(element);
     }
+  }
+
+  handleDOM() {
+    new ExpandWinBtnHandler(".new-project-button", ".new-projects-box");
+    new ExpandWinBtnHandler(".new-task-button", ".new-task-box");
+    new Form(".new-projects-window", this.controller, () =>
+      this.renderProjects()
+    );
+    new Form(".new-tasks-window", this.controller, () => this.renderTasks());
   }
 }
 

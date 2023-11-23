@@ -21,6 +21,9 @@ export class TabSettings extends TabChildElement {
       );
       btn.element.setAttribute("data-task-id", `${id}`);
       this.element.appendChild(btn.element);
+      btn.element.addEventListener("click", (event) => {
+        btn.handleClick();
+      });
     });
   }
 }
