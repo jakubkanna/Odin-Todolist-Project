@@ -35,7 +35,7 @@ class UI {
     const tasks = this.controller.getTasks();
     for (let i = 0; i < tasks.length; i++) {
       let task = tasks[i];
-      let element = createTaskTabEl(task, this.controller);
+      let element = createTaskTabEl();
       this.projectTaskContainer.appendChild(element);
     }
   }
