@@ -4,13 +4,9 @@ import { TaskForm, ProjectForm } from "./view_components/forms";
 export default class View {
   constructor() {
     this.projectList = document.querySelector("ul.list-projects");
-    this.taskList = document.querySelector("div.tasks");
-    this.projectForm = document.querySelector("form.form-projects");
-    this.taskWindowBox = document.querySelector(".new-task-box > .box-body");
-    this.editFormModal = document.getElementById("#editModalOverlay");
-    this.form = new TaskForm("form", "form-tasks", this.taskWindowBox);
-    this.taskForm = this.form.formElement;
-
+    this.taskList = document.querySelector(".tasks");
+    // this.projectForm = document.querySelector("form.form-projects");
+    // this.taskForm = document.querySelector("form.form-tasks");
     this.init();
   }
 
@@ -19,7 +15,6 @@ export default class View {
   init() {
     new CollapsibleBtn(".new-project-button", ".new-projects-box");
     new CollapsibleBtn(".new-task-button", ".new-task-box");
-    this.form.generateTaskForm();
   }
   createElement(tag, className) {
     const element = document.createElement(tag);
@@ -114,7 +109,7 @@ export default class View {
     });
   }
   bindAddProject(handler) {
-    // new Form(this.projectForm, handler).handleProjectForm();
+    new ProjectForm(".form-projects", handler).handleProjectForm();
   }
 
   bindSelectTask(handler) {
@@ -127,7 +122,7 @@ export default class View {
   }
 
   bindAddTask(handler, selectedProjectID) {
-    // this.taskForm.handleTaskForm(handler, selectedProjectID);
+    new TaskForm(".form-tasks", handler, selectedProjectID).handleTaskForm();
   }
 
   bindDeleteTask(handler) {
@@ -159,3 +154,12 @@ export default class View {
     });
   }
 }
+
+//when edit button click
+//copy dom element
+//insert into modal
+//assign data from modal to current task
+
+//bind complete task
+
+//save data in local file
