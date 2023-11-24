@@ -1,5 +1,7 @@
 # The Odin Project Lesson - To Do List
 
+This Todo list application was created for educational purposes as part of The Odin Project's Javascript course. The primary goal is to enhance understanding of fundamental concepts in JavaScript, such as code organization, classes, closures, and the Model-View-Controller (MVC) pattern.
+
 ## Lesson Link
 
 [The Odin Project Lesson](https://www.theodinproject.com/lessons/node-path-javascript-todo-list)
