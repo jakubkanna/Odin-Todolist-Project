@@ -84,7 +84,7 @@ class Task {
     this.date = date;
     this.description = description;
   }
-  toggleTask() {
+  toggleTaskStatus() {
     this.status = !this.status;
   }
 }

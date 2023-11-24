@@ -23,9 +23,18 @@ class CloseButton extends TabButton {
     super("button", "close-btn", "bi", "bi-x-lg");
   }
 }
-
+class ExclamationButton extends TabButton {
+  constructor() {
+    super("button", "important-btn", "bi", "bi-exclamation-lg");
+  }
+}
 function createTabButtons() {
-  return [new CheckButton(), new EditButton(), new CloseButton()];
+  return [
+    new ExclamationButton(),
+    new CheckButton(),
+    new EditButton(),
+    new CloseButton(),
+  ];
 }
 class CollapsibleBtn {
   constructor(button, box) {

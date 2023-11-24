@@ -69,44 +69,7 @@
                   </button>
                 </div>
                 <div class="box-body">
-                  <form class="form-tasks">
-                    <input
-                      type="text"
-                      name="task_name"
-                      id="task-name"
-                      placeholder="Task Name" />
-                    <input
-                      type="date"
-                      name="task_date"
-                      id="task-date"
-                      placeholder="Task Date" />
-                    <input
-                      type="text"
-                      name="task_note"
-                      id="task-note"
-                      placeholder="Task Note" />
-
-                    <div class="important-question">
-                      <p>Is this important?</p>
-                      <label for="important-yes">Yes</label>
-                      <input
-                        type="radio"
-                        name="task_priority"
-                        id="important-yes"
-                        value="yes" />
-
-                      <label for="important-no">No</label>
-                      <input
-                        type="radio"
-                        name="task_priority"
-                        id="important-no"
-                        value="no"
-                        checked />
-                    </div>
-                    <div class="submit">
-                      <button type="submit">OK</button>
-                    </div>
-                  </form>
+                  <!-- form goes here -->
                 </div>
               </div>
             </div>
@@ -121,5 +84,13 @@
       </div>
       <i class="bi bi-github"></i>
     </footer>
+    <div class="backdrop" id="backdrop"></div>
+    <div class="edit-modal-overlay" id="editModalOverlay">
+      <div class="edit-modal">
+        <div class="edit-modal-content">
+          <!-- form goes here -->
+        </div>
+      </div>
+    </div>
   </body>
 </html>
