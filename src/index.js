@@ -1,17 +1,9 @@
-/** Task:
- *  1. Functionality:
- *  view all projects
- *  view all todos in each project (probably just the title and duedate… perhaps changing color for different priorities)
- *  expand a single todo to see/edit its details
- *  delete a todo
- */
 import "./style.css";
-import createUI from "./modules/ui";
-import { createUser } from "./modules/user";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import Model from "./app_modules/model";
+import View from "./app_modules/view";
+import Controller from "./app_modules/controller";
 
 document.addEventListener("DOMContentLoaded", () => {
-  window.defaultUser = createUser("Default");
-  createUI(defaultUser);
-  //store data
+  window.app = new Controller(new Model(), new View());
 });
