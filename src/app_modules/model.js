@@ -43,7 +43,9 @@ export default class Model {
       priority
     );
     tasks.push(task);
+    this.selectedTask = task;
   }
+
   deleteProject(projectID) {
     this.projects.splice(projectID, 1);
   }
@@ -85,7 +87,8 @@ class Task {
     this.description = description;
     this.priority = priority;
   }
-  toggleTaskStatus() {
+  toggleTaskComplete() {
     this.status = !this.status;
   }
+  toggleTaskPriority() {}
 }

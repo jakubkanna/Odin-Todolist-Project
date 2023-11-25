@@ -100,7 +100,11 @@ export default class View {
       this.taskList.append(li);
     });
   }
-
+  //
+  addImportantClass(id) {
+    const element = this.taskList.querySelectorAll(".tab")[id];
+    element.classList.add("important");
+  }
   //Bind DOM to controller
 
   bindSelectProject(handler) {
@@ -137,7 +141,7 @@ export default class View {
       }
     });
   }
-  bindToggleTask(handler) {
+  bindToggleTaskPriority(handler) {
     this.taskList.addEventListener("click", (event) => {
       const tab = event.target.closest(".tab");
       if (event.target.classList.contains("important-btn")) {
@@ -161,6 +165,15 @@ export default class View {
           handler,
           selectedProjectID
         ).handleTaskForm(hide);
+      }
+    });
+  }
+  bindCompleteTask(handler) {
+    this.taskList.addEventListener("click", (event) => {
+      const tab = event.target.closest(".tab");
+      if (event.target.classList.contains("check-btn")) {
+        handler(); //data
+        tab.classList.toggle("complete"); //handle dom
       }
     });
   }
