@@ -58,48 +58,56 @@ export default class View {
   }
 
   displayTasks(project) {
+    console.log(project);
+
     // Clear existing tasks
     this.taskList.innerHTML = "";
+    if (project.tasks.length === 0) {
+      const p = this.createElement("p");
+      p.textContent = "Empty";
+      this.taskList.append(p);
+    } else {
+      project.tasks.forEach((task) => {
+        const li = this.createElement("li");
+        li.classList.add("tab");
+        li.setAttribute("data-project-id", project.id);
+        li.id = task.id;
 
-    project.tasks.forEach((task) => {
-      const li = this.createElement("li");
-      li.classList.add("tab");
-      li.setAttribute("data-project-id", project.id);
-      li.id = task.id;
+        // Title
+        const titleSpan = this.createElement("span");
+        titleSpan.textContent = task.title;
+        titleSpan.classList.add("tab-content-field");
+        li.append(titleSpan);
 
-      // Title
-      const titleSpan = this.createElement("span");
-      titleSpan.textContent = task.title;
-      titleSpan.classList.add("tab-content-field");
-      li.append(titleSpan);
+        // Date
+        const dateSpan = this.createElement("span");
+        dateSpan.textContent = task.date;
+        dateSpan.classList.add("tab-content-field", "date-field");
 
-      // Date
-      const dateSpan = this.createElement("span");
-      dateSpan.textContent = task.date;
-      dateSpan.classList.add("tab-content-field", "date-field");
+        li.append(dateSpan);
 
-      li.append(dateSpan);
+        // Settings
+        const settingsDiv = this.createElement("div");
+        const buttons = createTabBtnSet(); // Create a new set of buttons for each task
+        buttons.forEach((button) => {
+          settingsDiv.append(button.getElement());
+        });
+        settingsDiv.classList.add("tab-content-field");
 
-      // Settings
-      const settingsDiv = this.createElement("div");
-      const buttons = createTabBtnSet(); // Create a new set of buttons for each task
-      buttons.forEach((button) => {
-        settingsDiv.append(button.getElement());
+        li.append(settingsDiv);
+
+        // Description
+        const descriptionDiv = this.createElement("span");
+        descriptionDiv.textContent = task.description;
+        descriptionDiv.classList.add("tab-content-field");
+
+        li.append(descriptionDiv);
+
+        this.taskList.append(li);
       });
-      settingsDiv.classList.add("tab-content-field");
-
-      li.append(settingsDiv);
-
-      // Description
-      const descriptionDiv = this.createElement("span");
-      descriptionDiv.textContent = task.description;
-      descriptionDiv.classList.add("tab-content-field");
-
-      li.append(descriptionDiv);
-
-      this.taskList.append(li);
-    });
+    }
   }
+
   //
   addImportantClass(id) {
     const element = this.taskList.querySelectorAll(".tab")[id];
@@ -120,7 +128,6 @@ export default class View {
   bindSelectTask(handler) {
     this.taskList.addEventListener("click", (event) => {
       const tab = event.target.closest(".tab");
-      console.log(tab);
       const tabID = parseInt(tab.id);
       const dataProjectID = parseInt(tab.getAttribute("data-project-id"));
       handler(dataProjectID, tabID);
@@ -178,12 +185,3 @@ export default class View {
     });
   }
 }
-
-//when edit button click
-//copy form element
-//insert into modal
-//assign data from modal to current task
-
-//bind complete task
-
-//save data in local file

@@ -2,22 +2,21 @@ export default class Controller {
   constructor(model, view) {
     this.model = model;
     this.view = view;
-    this.init(this.model.projects, this.model.selectedProject); // Display initial project
+    this.onProjectChanged(this.model.projects, this.model.selectedProject);
+    this.view.bindSelectProject(this.handleSelectProject);
+    this.view.bindAddProject(this.handleAddProject);
+    this.view.bindSelectTask(this.handleSelectTask);
+    this.view.bindAddTask(this.handleAddTask, this.model.selectedProject.id);
+    this.view.bindDeleteTask(this.handleDeleteTask);
+    this.view.bindToggleTaskPriority(this.handleToggleTaskPriority);
+    this.view.bindEditTask(this.handleEditTask, this.model.selectedProject.id);
+    this.view.bindCompleteTask(this.handleCompleteTask);
+    this.model.bindProjectChanged(this.onProjectChanged);
   }
   // Initialization
 
-  init = (projects, selectedProject) => {
+  onProjectChanged = (projects, selectedProject) => {
     this.view.displayProjects(projects, selectedProject);
-
-    this.view.bindSelectProject(this.handleSelectProject);
-    this.view.bindAddProject(this.handleAddProject);
-
-    this.view.bindSelectTask(this.handleSelectTask);
-    this.view.bindAddTask(this.handleAddTask, selectedProject.id);
-    this.view.bindDeleteTask(this.handleDeleteTask);
-    this.view.bindToggleTaskPriority(this.handleToggleTaskPriority);
-    this.view.bindEditTask(this.handleEditTask, selectedProject.id);
-    this.view.bindCompleteTask(this.handleCompleteTask);
   };
 
   // Project handling
@@ -51,12 +50,12 @@ export default class Controller {
     projectID = this.model.selectedProject.id;
     this.model.addTask(projectID, title, date, description, status, priority);
     this.view.displayTasks(this.model.selectedProject);
-    if ((priority = "yes")) {
+    if (priority === "yes") {
       this.view.addImportantClass(this.model.selectedTask.id); //id of the task
     }
   };
   //remove
-  handleDeleteTask = (tabID) => {
+  handleDeleteTask = () => {
     this.model.deleteTask(
       this.model.selectedProject.id,
       this.model.selectedTask.id
@@ -69,8 +68,6 @@ export default class Controller {
   //edit
   handleEditTask = (projectID, title, date, description, priority) => {
     projectID = this.model.selectedProject.id;
-    console.log(projectID);
-    console.log(this.model.selectedTask.id);
     this.model.projects[projectID].tasks[this.model.selectedTask.id].editTask(
       title,
       date,
@@ -82,6 +79,5 @@ export default class Controller {
   //complete
   handleCompleteTask = () => {
     this.model.selectedTask.toggleTaskComplete();
-    // this.view.
   };
 }
