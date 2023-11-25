@@ -1,20 +1,21 @@
-import { createTabButtons, CollapsibleBtn } from "./view_components/buttons";
+import {
+  createTabBtnSet,
+  ToggleVisibilityBtn,
+} from "./view_components/buttons";
 import { TaskForm, ProjectForm } from "./view_components/forms";
 
 export default class View {
   constructor() {
     this.projectList = document.querySelector("ul.list-projects");
     this.taskList = document.querySelector(".tasks");
-    // this.projectForm = document.querySelector("form.form-projects");
-    // this.taskForm = document.querySelector("form.form-tasks");
     this.init();
   }
 
   //Initialization
 
   init() {
-    new CollapsibleBtn(".new-project-button", ".new-projects-box");
-    new CollapsibleBtn(".new-task-button", ".new-task-box");
+    new ToggleVisibilityBtn(".new-project-button", ".new-projects-box");
+    new ToggleVisibilityBtn(".new-task-button", ".new-task-box");
   }
   createElement(tag, className) {
     const element = document.createElement(tag);
@@ -81,7 +82,7 @@ export default class View {
 
       // Settings
       const settingsDiv = this.createElement("div");
-      const buttons = createTabButtons(); // Create a new set of buttons for each task
+      const buttons = createTabBtnSet(); // Create a new set of buttons for each task
       buttons.forEach((button) => {
         settingsDiv.append(button.getElement());
       });
@@ -104,7 +105,7 @@ export default class View {
 
   bindSelectProject(handler) {
     this.projectList.addEventListener("click", (event) => {
-      const id = event.target.closest("li").id;
+      const id = parseInt(event.target.closest("li").id);
       handler(id); //handlers handle data
     });
   }
@@ -115,8 +116,9 @@ export default class View {
   bindSelectTask(handler) {
     this.taskList.addEventListener("click", (event) => {
       const tab = event.target.closest(".tab");
-      const tabID = tab.id;
-      const dataProjectID = tab.getAttribute("data-project-id");
+      console.log(tab);
+      const tabID = parseInt(tab.id);
+      const dataProjectID = parseInt(tab.getAttribute("data-project-id"));
       handler(dataProjectID, tabID);
     });
   }
@@ -144,19 +146,28 @@ export default class View {
       }
     });
   }
-  bindEditTask(handler) {
+  bindEditTask(handler, selectedProjectID) {
     this.taskList.addEventListener("click", (event) => {
-      const tab = event.target.closest(".tab");
       if (event.target.classList.contains("edit-btn")) {
-        //open modal form
-        handler();
+        const form = document.querySelector(".form-tasks");
+        const modal = document.querySelector("#editModalOverlay");
+        const form_clone = form.cloneNode(true);
+        form_clone.classList.remove(".form-tasks");
+        form_clone.classList.add("edit-task_form-tasks");
+        modal.append(form_clone);
+        const hide = true;
+        new TaskForm(
+          ".edit-task_form-tasks",
+          handler,
+          selectedProjectID
+        ).handleTaskForm(hide);
       }
     });
   }
 }
 
 //when edit button click
-//copy dom element
+//copy form element
 //insert into modal
 //assign data from modal to current task
 

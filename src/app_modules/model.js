@@ -79,10 +79,11 @@ class Task {
     this.status = status;
     this.priority = priority;
   }
-  editTask(title, date, description) {
+  editTask(title, date, description, priority) {
     this.title = title;
     this.date = date;
     this.description = description;
+    this.priority = priority;
   }
   toggleTaskStatus() {
     this.status = !this.status;

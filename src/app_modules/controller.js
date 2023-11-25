@@ -16,7 +16,7 @@ export default class Controller {
     this.view.bindAddTask(this.handleAddTask, selectedProject.id);
     this.view.bindDeleteTask(this.handleDeleteTask);
     this.view.bindToggleTask(this.handleToggleTask);
-    this.view.bindEditTask(this.handleEditTask);
+    this.view.bindEditTask(this.handleEditTask, selectedProject.id);
   };
 
   // Project handling
@@ -39,12 +39,16 @@ export default class Controller {
     //double check data
     if (dataProjectID === this.model.selectedProject.id) {
       this.model.selectedTask = this.model.projects[dataProjectID].tasks[tabID];
+    } else {
+      console.error(
+        "The dataProjectID does not match the selectedProject.id. Unable to set selectedTask."
+      );
     }
   };
   //add
-  handleAddTask = (projectID, title, date, description, status, priority) => {
+  handleAddTask = (projectID, title, date, description, priority) => {
     projectID = this.model.selectedProject.id;
-    this.model.addTask(projectID, title, date, description, status, priority);
+    this.model.addTask(projectID, title, date, description, priority);
     this.view.displayTasks(this.model.selectedProject);
   };
   //remove
@@ -59,5 +63,16 @@ export default class Controller {
     this.model.selectedTask.toggleTaskStatus();
   };
   //edit
-  handleEditTask = () => {};
+  handleEditTask = (projectID, title, date, description, priority) => {
+    projectID = this.model.selectedProject.id;
+    console.log(projectID);
+    console.log(this.model.selectedTask.id);
+    this.model.projects[projectID].tasks[this.model.selectedTask.id].editTask(
+      title,
+      date,
+      description,
+      priority
+    );
+    this.view.displayTasks(this.model.selectedProject);
+  };
 }

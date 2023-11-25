@@ -28,7 +28,7 @@ class ExclamationButton extends TabButton {
     super("button", "important-btn", "bi", "bi-exclamation-lg");
   }
 }
-function createTabButtons() {
+function createTabBtnSet() {
   return [
     new ExclamationButton(),
     new CheckButton(),
@@ -36,7 +36,10 @@ function createTabButtons() {
     new CloseButton(),
   ];
 }
-class CollapsibleBtn {
+function createProjectLiItemBtnSet() {
+  return [new ExclamationButton(), new CloseButton()];
+}
+class ToggleVisibilityBtn {
   constructor(button, box) {
     this.button = document.querySelector(button);
     this.box = document.body.querySelector(box);
@@ -62,4 +65,4 @@ class CollapsibleBtn {
     this.isVisible = false;
   }
 }
-export { createTabButtons, CollapsibleBtn };
+export { createTabBtnSet, ToggleVisibilityBtn };
