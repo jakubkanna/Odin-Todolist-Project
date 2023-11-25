@@ -142,6 +142,10 @@ a {
 .important {
   background-color: aqua;
 }
+.complete {
+  text-decoration: line-through;
+  background-color: var(--body-bg-color-dark);
+}
 html,
 body {
   color: var(--text-color) !important;

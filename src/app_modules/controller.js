@@ -15,8 +15,9 @@ export default class Controller {
     this.view.bindSelectTask(this.handleSelectTask);
     this.view.bindAddTask(this.handleAddTask, selectedProject.id);
     this.view.bindDeleteTask(this.handleDeleteTask);
-    this.view.bindToggleTask(this.handleToggleTask);
-    this.view.bindEditTask(this.handleEditTask);
+    this.view.bindToggleTaskPriority(this.handleToggleTaskPriority);
+    this.view.bindEditTask(this.handleEditTask, selectedProject.id);
+    this.view.bindCompleteTask(this.handleCompleteTask);
   };
 
   // Project handling
@@ -39,6 +40,10 @@ export default class Controller {
     //double check data
     if (dataProjectID === this.model.selectedProject.id) {
       this.model.selectedTask = this.model.projects[dataProjectID].tasks[tabID];
+    } else {
+      console.error(
+        "The dataProjectID does not match the selectedProject.id. Unable to set selectedTask."
+      );
     }
   };
   //add
@@ -46,6 +51,9 @@ export default class Controller {
     projectID = this.model.selectedProject.id;
     this.model.addTask(projectID, title, date, description, status, priority);
     this.view.displayTasks(this.model.selectedProject);
+    if ((priority = "yes")) {
+      this.view.addImportantClass(this.model.selectedTask.id); //id of the task
+    }
   };
   //remove
   handleDeleteTask = (tabID) => {
@@ -55,9 +63,25 @@ export default class Controller {
     );
   };
   //toggle
-  handleToggleTask = () => {
-    this.model.selectedTask.toggleTaskStatus();
+  handleToggleTaskPriority = () => {
+    this.model.selectedTask.toggleTaskPriority();
   };
   //edit
-  handleEditTask = () => {};
+  handleEditTask = (projectID, title, date, description, priority) => {
+    projectID = this.model.selectedProject.id;
+    console.log(projectID);
+    console.log(this.model.selectedTask.id);
+    this.model.projects[projectID].tasks[this.model.selectedTask.id].editTask(
+      title,
+      date,
+      description,
+      priority
+    );
+    this.view.displayTasks(this.model.selectedProject);
+  };
+  //complete
+  handleCompleteTask = () => {
+    this.model.selectedTask.toggleTaskComplete();
+    // this.view.
+  };
 }

@@ -46,7 +46,7 @@ class TaskForm extends Form {
     super(formClass, handler, selectedProjectID);
   }
 
-  handleTaskForm() {
+  handleTaskForm(remove) {
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       const data = this._input(this.form);
@@ -61,6 +61,9 @@ class TaskForm extends Form {
       );
 
       this._resetInput(this.form);
+      if (remove) {
+        this.form.remove();
+      }
     });
   }
 }
