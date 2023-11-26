@@ -1,9 +1,8 @@
 // Base Form class
 class Form {
-  constructor(formClass, handler, selectedProjectID) {
-    this.formClass = formClass;
-    this.form = document.querySelector(this.formClass);
-    this.handler = handler;
+  constructor(form, cHandler, selectedProjectID) {
+    this.form = form;
+    this.cHandler = cHandler;
     this.selectedProjectID = selectedProjectID;
     this.init();
   }
@@ -41,17 +40,18 @@ class Form {
 }
 
 // TaskForm class
-class TaskForm extends Form {
-  constructor(formClass, handler, selectedProjectID) {
-    super(formClass, handler, selectedProjectID);
+class TaskFormHandler extends Form {
+  constructor(form, cHandler, selectedProjectID) {
+    super(form, cHandler, selectedProjectID);
+    this.handleTaskForm();
   }
 
-  handleTaskForm(remove) {
+  handleTaskForm() {
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       const data = this._input(this.form);
-
-      this.handler(
+      // console.log(this.selectedProjectID);
+      this.cHandler(
         this.selectedProjectID,
         data.get("task_name"),
         data.get("task_date"),
@@ -61,17 +61,20 @@ class TaskForm extends Form {
       );
 
       this._resetInput(this.form);
-      if (remove) {
-        this.form.remove();
-      }
     });
+  }
+  remove(bool) {
+    if (bool) {
+      this.form.remove();
+    }
   }
 }
 
 // ProjectForm class
-class ProjectForm extends Form {
-  constructor(formClass, handler, selectedProjectID) {
-    super(formClass, handler, selectedProjectID);
+class ProjectFormHandler extends Form {
+  constructor(form, cHandler, selectedProjectID) {
+    super(form, cHandler, selectedProjectID);
+    this.handleProjectForm();
   }
 
   handleProjectForm() {
@@ -80,9 +83,9 @@ class ProjectForm extends Form {
       const data = this._input(this.form);
       const projectName = data.get("project_name");
       this._resetInput(this.form);
-      this.handler(projectName);
+      this.cHandler(projectName);
     });
   }
 }
 
-export { TaskForm, ProjectForm };
+export { TaskFormHandler, ProjectFormHandler };

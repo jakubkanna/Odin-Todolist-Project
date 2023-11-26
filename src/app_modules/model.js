@@ -4,9 +4,9 @@ export default class Model {
     if (this.projects.length === 0) {
       this.default = this.init();
     }
-    this.selectedProject =
-      JSON.parse(localStorage.getItem("selectedProject")) || this.projects[0]; //select first by default
-    this.selectedTask = this.projects[0].tasks[0]; //select first by default
+    this.activeProjectID =
+      JSON.parse(localStorage.getItem("activeProjectID")) || 0;
+    this.activeTaskID = JSON.parse(localStorage.getItem("activeTaskID")) || 0;
   }
   init() {
     //default project
@@ -28,24 +28,39 @@ export default class Model {
   bindProjectChanged(callback) {
     this.onProjectChanged = callback;
   }
-  _commit(projects, selectedProject) {
-    this.onProjectChanged(this.projects, this.selectedProject);
+
+  _commit(projects, activeProjectID) {
+    this.onProjectChanged(this.projects, this.activeProjectID);
     localStorage.setItem("projects", JSON.stringify(projects));
-    localStorage.setItem("selectedProject", JSON.stringify(selectedProject));
+    localStorage.setItem("activeProjectID", JSON.stringify(activeProjectID));
   }
 
+  selectProject(id) {
+    this.activeProjectID = id;
+    this.onProjectChanged(this.projects, this.activeProjectID);
+    this._commit(this.projects, this.activeProjectID);
+  }
   addProject(projectTitle) {
-    const id =
-      this.projects.length > 0
-        ? this.projects[this.projects.length - 1].id + 1
-        : 0;
+    let id;
+    if (this.projects.length > 0) {
+      id = this.projects[this.projects.length - 1].id + 1;
+    } else {
+      id = 0;
+    }
     const project = new Project(id, projectTitle);
     this.projects.push(project);
-    this.onProjectChanged(this.projects, this.selectedProject);
-    this._commit(this.projects, this.selectedProject);
+    this.onProjectChanged(this.projects, this.activeProjectID);
+    this._commit(this.projects, this.activeProjectID);
+  }
+
+  selectTask(taskID) {
+    this.activeTaskID = taskID;
+    this.onProjectChanged(this.projects, this.activeProjectID);
+    this._commit(this.projects, this.activeProjectID);
   }
 
   addTask(projectID, title, date, description, status, priority) {
+    // console.log(projectID);
     if (projectID < 0 || projectID >= this.projects.length) {
       console.error("Invalid projectID. Task not added.");
       return;
@@ -62,32 +77,33 @@ export default class Model {
         priority
       );
       tasks.push(task);
-      this.selectedTask = task;
-      this.onProjectChanged(this.projects, this.selectedProject);
-      this._commit(this.projects, this.selectedProject);
+      this.onProjectChanged(this.projects, this.activeProjectID);
+      this._commit(this.projects, this.activeProjectID);
     }
-  }
-
-  deleteProject(projectID) {
-    this.projects.splice(projectID, 1);
-    this.onProjectChanged(this.projects, this.selectedProject);
-    this._commit(this.projects, this.selectedProject);
   }
   deleteTask(projectID, taskID) {
     this.projects[projectID].tasks.splice(taskID, 1);
-    this.onProjectChanged(this.projects, this.selectedProject);
-    this._commit(this.projects, this.selectedProject);
+    this.onProjectChanged(this.projects, this.activeProjectID);
+    this._commit(this.projects, this.activeProjectID);
   }
+  toggleTaskPriority(projectID, taskID) {
+    const task = this.projects[projectID].tasks[taskID];
+    if (task.priority === "no") {
+      task.priority = "yes";
+    } else {
+      task.priority = "no";
+    }
 
-  selectProject(id) {
-    this.selectedProject = this.projects[id];
-    this.onProjectChanged(this.projects, this.selectedProject);
-    this._commit(this.projects, this.selectedProject);
+    this.onProjectChanged(this.projects, this.activeProjectID);
+    this._commit(this.projects, this.activeProjectID);
   }
-  selectTask(projectID, taskID) {
-    this.selectedTask = this.projects[projectID].task[taskID];
-    this.onProjectChanged(this.projects, this.selectedProject);
-    this._commit(this.projects, this.selectedProject);
+  toggleTaskComplete(projectID, taskID) {
+    const task = this.projects[projectID].tasks[taskID];
+
+    task.status = !task.status;
+
+    this.onProjectChanged(this.projects, this.activeProjectID);
+    this._commit(this.projects, this.activeProjectID);
   }
 }
 
@@ -96,9 +112,6 @@ class Project {
     this.id = id;
     this.title = title;
     this.tasks = [];
-  }
-  editProject(title) {
-    this.title = title;
   }
 }
 class Task {
@@ -110,21 +123,5 @@ class Task {
     this.description = description;
     this.status = status;
     this.priority = priority;
-  }
-  editTask(title, date, description, priority) {
-    this.title = title;
-    this.date = date;
-    this.description = description;
-    this.priority = priority;
-  }
-  toggleTaskComplete() {
-    this.status = !this.status;
-  }
-  toggleTaskPriority() {
-    if (this.priority === "no") {
-      this.priority = "yes";
-    } else {
-      this.priority = "no";
-    }
   }
 }

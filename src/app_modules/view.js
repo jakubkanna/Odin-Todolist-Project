@@ -2,12 +2,19 @@ import {
   createTabBtnSet,
   ToggleVisibilityBtn,
 } from "./view_components/buttons";
-import { TaskForm, ProjectForm } from "./view_components/forms";
+import { TaskFormHandler, ProjectFormHandler } from "./view_components/forms";
 
 export default class View {
   constructor() {
-    this.projectList = document.querySelector("ul.list-projects");
-    this.taskList = document.querySelector(".tasks");
+    this.projectUL = document.querySelector("ul.list-projects");
+    this.projectLI;
+    this.taskUL = document.querySelector(".tasks");
+    this.taskLI;
+    this.dataProjectID = 0; //default
+    this.dataTaskID = 0; //default
+    this.projectForm = document.querySelector(".form-projects");
+    this.taskForm = document.querySelector(".form-tasks");
+
     this.init();
   }
 
@@ -29,16 +36,18 @@ export default class View {
 
   // Display logic
 
-  displayProjects(projects, selectedProject) {
+  displayProjects(projects, activeProjectID) {
+    // console.log(activeProjectID, projects);
+    // console.log(projects[activeProjectID]);
     //clean dom
-    while (this.projectList.firstChild) {
-      this.projectList.removeChild(this.projectList.firstChild);
+    while (this.projectUL.firstChild) {
+      this.projectUL.removeChild(this.projectUL.firstChild);
     }
     // Show default message
     if (projects.length === 0) {
       const p = this.createElement("p");
       p.textContent = "Empty";
-      this.projectList.append(p);
+      this.projectUL.append(p);
     }
     //create list
     else {
@@ -46,32 +55,31 @@ export default class View {
         const li = this.createElement("li");
         li.classList.add("list-item");
 
-        li.id = project.id;
+        li.setAttribute("data-project-id", project.id);
         const span = this.createElement("span");
         span.textContent = project.title;
         li.append(span);
-        this.projectList.append(li);
+        this.projectUL.append(li);
 
-        this.displayTasks(selectedProject);
+        this.displayTasks(projects[activeProjectID]);
       });
     }
   }
 
   displayTasks(project) {
-    console.log(project);
-
     // Clear existing tasks
-    this.taskList.innerHTML = "";
+    this.taskUL.innerHTML = "";
+    // console.log(project);
     if (project.tasks.length === 0) {
       const p = this.createElement("p");
       p.textContent = "Empty";
-      this.taskList.append(p);
+      this.taskUL.append(p);
     } else {
       project.tasks.forEach((task) => {
         const li = this.createElement("li");
         li.classList.add("tab");
         li.setAttribute("data-project-id", project.id);
-        li.id = task.id;
+        li.setAttribute("data-task-id", task.id);
 
         // Title
         const titleSpan = this.createElement("span");
@@ -103,85 +111,204 @@ export default class View {
 
         li.append(descriptionDiv);
 
-        this.taskList.append(li);
+        this.taskUL.append(li);
+
+        if (task.priority === "yes") {
+          li.classList.add("important");
+        }
       });
     }
   }
 
-  //
-  addImportantClass(id) {
-    const element = this.taskList.querySelectorAll(".tab")[id];
-    element.classList.add("important");
+  //binders
+  bindSelectProject(cHandler) {
+    this.projectLI = document.querySelector("li.list-item"); // update
+    new ProjectSelector(this.projectUL, this.projectLI, cHandler);
   }
-  //Bind DOM to controller
 
-  bindSelectProject(handler) {
-    this.projectList.addEventListener("click", (event) => {
-      const id = parseInt(event.target.closest("li").id);
-      handler(id); //handlers handle data
+  bindAddProject(cHandler) {
+    new ProjectFormHandler(this.projectForm, cHandler);
+  }
+
+  bindAddTask(cHandler, selectedProjectID) {
+    new TaskFormHandler(this.taskForm, cHandler, selectedProjectID);
+  }
+
+  bindDeleteTask(cHandler) {
+    this.taskUL = document.querySelector(".tasks");
+    new RemoveHandler(this.taskUL, cHandler, "close-btn");
+  }
+
+  bindToggleTaskPriority(cHandler) {
+    this.taskUL = document.querySelector(".tasks");
+
+    new TaskManager(this.taskUL, cHandler, "important-btn");
+  }
+}
+class ProjectBase {
+  constructor(container, handler) {
+    this.container = container;
+    this.handler = handler;
+  }
+}
+
+class ProjectSelector extends ProjectBase {
+  constructor(container, projectElement, handler) {
+    super(container, handler);
+    this.projectElement = projectElement;
+    this.projectId = null;
+    this.setupClickEvent();
+  }
+
+  setupClickEvent() {
+    this.container.addEventListener("click", (event) => {
+      const clickedProject = event.target.closest(
+        `.${this.projectElement.className}`
+      );
+      if (clickedProject) {
+        this.projectId = parseInt(
+          clickedProject.getAttribute("data-project-id")
+        );
+      }
+      if (this.handler) this.handler(this.projectId);
     });
   }
-  bindAddProject(handler) {
-    new ProjectForm(".form-projects", handler).handleProjectForm();
-  }
+}
 
-  bindSelectTask(handler) {
-    this.taskList.addEventListener("click", (event) => {
-      const tab = event.target.closest(".tab");
-      const tabID = parseInt(tab.id);
-      const dataProjectID = parseInt(tab.getAttribute("data-project-id"));
-      handler(dataProjectID, tabID);
-    });
+class TaskManager extends ProjectBase {
+  constructor(container, handler, buttonClass) {
+    super(container, handler);
+    this.buttonClass = buttonClass;
+    this.projectId = null;
+    this.taskId = null;
   }
+}
 
-  bindAddTask(handler, selectedProjectID) {
-    new TaskForm(".form-tasks", handler, selectedProjectID).handleTaskForm();
+class RemoveHandler extends TaskManager {
+  constructor(container, handler, buttonClass) {
+    super(container, handler, buttonClass);
+
+    this.buttonClass = buttonClass;
+
+    this.performDeleteAction();
   }
-
-  bindDeleteTask(handler) {
-    //add handler on delete button
-    this.taskList.addEventListener("click", (event) => {
-      const tab = event.target.closest(".tab");
-      if (event.target.className === "close-btn bi bi-x-lg") {
-        tab.remove();
-        handler();
+  performDeleteAction() {
+    this.container.addEventListener("click", (e) => {
+      this.taskTab = e.target.parentElement.parentElement;
+      this.projectId = parseInt(this.taskTab.getAttribute("data-project-id"));
+      this.taskId = parseInt(this.taskTab.getAttribute("data-task-id"));
+      if (e.target.classList.contains(this.buttonClass)) {
+        this.taskTab.remove();
+        this.handler(this.projectId, this.taskId);
       }
     });
+    return;
   }
-  bindToggleTaskPriority(handler) {
-    this.taskList.addEventListener("click", (event) => {
-      const tab = event.target.closest(".tab");
-      if (event.target.classList.contains("important-btn")) {
-        tab.classList.toggle("important");
-        handler();
-      }
-    });
+}
+
+class ToggleHandler extends TaskManager {
+  constructor(container, handler, buttonClass) {
+    super(container, handler, buttonClass);
   }
-  bindEditTask(handler, selectedProjectID) {
-    this.taskList.addEventListener("click", (event) => {
-      if (event.target.classList.contains("edit-btn")) {
-        const form = document.querySelector(".form-tasks");
-        const modal = document.querySelector("#editModalOverlay");
-        const form_clone = form.cloneNode(true);
-        form_clone.classList.remove(".form-tasks");
-        form_clone.classList.add("edit-task_form-tasks");
-        modal.append(form_clone);
-        const hide = true;
-        new TaskForm(
-          ".edit-task_form-tasks",
-          handler,
-          selectedProjectID
-        ).handleTaskForm(hide);
-      }
-    });
-  }
-  bindCompleteTask(handler) {
-    this.taskList.addEventListener("click", (event) => {
-      const tab = event.target.closest(".tab");
-      if (event.target.classList.contains("check-btn")) {
-        handler(); //data
-        tab.classList.toggle("complete"); //handle dom
+  performToggleAction() {
+    this.container.addEventListener("click", (e) => {
+      if (e.target.classList.contains(this.buttonClass)) {
+        new TaskActionHandler(e, this.buttonClass).toggle(this.handler); //error undefined tasks
       }
     });
   }
 }
+
+// class TaskActionHandler {
+//   constructor(e, buttonClass) {
+//     this.taskTab = e.target.parentElement.parentElement;
+//     // console.log(this.taskTab);
+//     this.buttonClass = buttonClass;
+
+//     this.projectId = parseInt(this.taskTab.getAttribute("data-project-id"));
+//     // console.log(this.projectId);
+//     this.taskId = parseInt(this.taskTab.getAttribute("data-task-id"));
+//     // console.log(this.taskId);
+//   }
+
+//   toggle(handler) {
+//     // console.log(handler);
+//     if (this.taskTab) {
+//       if (handler) {
+//         this.taskTab.classList.toggle("important");
+//         handler(this.projectId, this.taskId);
+//       }
+//     }
+//     return;
+//   }
+
+//   remove(handler) {
+//     if (this.taskTab) {
+//       if (handler) {
+//         this.taskTab.remove();
+//         handler(this.projectId, this.taskId);
+//       }
+//     }
+//     return;
+//   }
+// }
+
+// class TaskManager extends ProjectBase {
+//   constructor(container, handler, buttonClass) {
+//     super(container, handler);
+//     this.buttonClass = buttonClass;
+
+//     this.projectId = null;
+//     this.taskId = null;
+//   }
+
+//   performDeleteAction() {
+//     this.container.addEventListener("click", (e) => {
+//       if (e.target.classList.contains(this.buttonClass)) {
+//         new TaskActionHandler(e, this.buttonClass).remove(this.handler); //error undefined tasks
+//       }
+//     });
+//   }
+
+//   performToggleAction() {
+//     this.container.addEventListener("click", (e) => {
+//       if (e.target.classList.contains(this.buttonClass)) {
+//         new TaskActionHandler(e, this.buttonClass).toggle(this.handler); //error undefined tasks
+//       }
+//     });
+//   }
+// }
+
+// class TaskActionHandler {
+//   constructor(e, buttonClass) {
+//     this.taskTab = e.target.parentElement.parentElement;
+//     // console.log(this.taskTab);
+//     this.buttonClass = buttonClass;
+
+//     this.projectId = parseInt(this.taskTab.getAttribute("data-project-id"));
+//     // console.log(this.projectId);
+//     this.taskId = parseInt(this.taskTab.getAttribute("data-task-id"));
+//     // console.log(this.taskId);
+//   }
+
+//   toggle(handler) {
+//     // console.log(handler);
+//     if (this.taskTab) {
+//       if (handler) {
+//         this.taskTab.classList.toggle("important");
+//         handler(this.projectId, this.taskId);
+//       }
+//     }
+//     return;
+//   }
+
+//   remove(handler) {
+//     if (this.taskTab) {
+//       if (handler) {
+//         this.taskTab.remove();
+//         handler(this.projectId, this.taskId);
+//       }
+//     }
+//     return;
+//   }
+// }

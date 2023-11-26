@@ -2,82 +2,58 @@ export default class Controller {
   constructor(model, view) {
     this.model = model;
     this.view = view;
-    this.onProjectChanged(this.model.projects, this.model.selectedProject);
+
+    this.onProjectChanged(this.model.projects, this.model.activeProjectID);
+
+    this.model.bindProjectChanged(this.onProjectChanged);
+
     this.view.bindSelectProject(this.handleSelectProject);
     this.view.bindAddProject(this.handleAddProject);
-    this.view.bindSelectTask(this.handleSelectTask);
-    this.view.bindAddTask(this.handleAddTask, this.model.selectedProject.id);
+    // console.log(this.model.activeProjectID);
+    this.view.bindAddTask(this.handleAddTask, this.model.activeProjectID);
     this.view.bindDeleteTask(this.handleDeleteTask);
-    this.view.bindToggleTaskPriority(this.handleToggleTaskPriority);
-    this.view.bindEditTask(this.handleEditTask, this.model.selectedProject.id);
-    this.view.bindCompleteTask(this.handleCompleteTask);
-    this.model.bindProjectChanged(this.onProjectChanged);
+    this.view.bindToggleTaskPriority(this.handleTaskPriority);
+    // this.view.bindToggleTaskComplete(this.handleTaskComplete);
   }
   // Initialization
 
-  onProjectChanged = (projects, selectedProject) => {
-    this.view.displayProjects(projects, selectedProject);
+  onProjectChanged = (projects, activeProjectID) => {
+    this.view.displayProjects(projects, activeProjectID);
   };
 
-  // Project handling
+  //handlers
 
-  //select
   handleSelectProject = (id) => {
     this.model.selectProject(id);
-    this.view.displayTasks(this.model.selectedProject);
   };
-  //add
   handleAddProject = (projectText) => {
     this.model.addProject(projectText);
-    this.view.displayProjects(this.model.projects, this.model.selectedProject);
+    this.view.displayProjects(this.model.projects, this.model.activeProjectID);
   };
 
-  // Task handling
-
-  //select
-  handleSelectTask = (dataProjectID, tabID) => {
+  handleSelectTask = (tabID) => {
     //double check data
-    if (dataProjectID === this.model.selectedProject.id) {
-      this.model.selectedTask = this.model.projects[dataProjectID].tasks[tabID];
+    if (this.view.dataProjectID === this.model.activeProjectID) {
+      this.model.activeTaskID = tabID;
     } else {
       console.error(
-        "The dataProjectID does not match the selectedProject.id. Unable to set selectedTask."
+        "The dataProjectID does not match the activeProjectID. Unable to set selectedTask."
       );
     }
   };
-  //add
   handleAddTask = (projectID, title, date, description, status, priority) => {
-    projectID = this.model.selectedProject.id;
+    // console.log(projectID);
     this.model.addTask(projectID, title, date, description, status, priority);
-    this.view.displayTasks(this.model.selectedProject);
-    if (priority === "yes") {
-      this.view.addImportantClass(this.model.selectedTask.id); //id of the task
-    }
   };
-  //remove
-  handleDeleteTask = () => {
-    this.model.deleteTask(
-      this.model.selectedProject.id,
-      this.model.selectedTask.id
-    );
+  handleDeleteTask = (projectID, taskID) => {
+    this.model.deleteTask(projectID, taskID);
   };
-  //toggle
-  handleToggleTaskPriority = () => {
-    this.model.selectedTask.toggleTaskPriority();
+  handleTaskPriority = (projectID, taskID) => {
+    console.log("gas", projectID, taskID);
+
+    this.model.toggleTaskPriority(projectID, taskID);
   };
-  //edit
-  handleEditTask = (projectID, title, date, description, priority) => {
-    projectID = this.model.selectedProject.id;
-    this.model.projects[projectID].tasks[this.model.selectedTask.id].editTask(
-      title,
-      date,
-      description,
-      priority
-    );
-    this.view.displayTasks(this.model.selectedProject);
-  };
-  //complete
-  handleCompleteTask = () => {
-    this.model.selectedTask.toggleTaskComplete();
+  handleTaskComplete = (projectID, taskID) => {
+    this.model.toggleTaskComplete(projectID, taskID);
   };
 }
