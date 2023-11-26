@@ -13,7 +13,8 @@ export default class Controller {
     this.view.bindAddTask(this.handleAddTask, this.model.activeProjectID);
     this.view.bindDeleteTask(this.handleDeleteTask);
     this.view.bindToggleTaskPriority(this.handleTaskPriority);
-    // this.view.bindToggleTaskComplete(this.handleTaskComplete);
+    this.view.bindToggleTaskComplete(this.handleTaskComplete);
+    this.view.bindEditTask(this.handleEditTask);
   }
   // Initialization
 
@@ -26,13 +27,13 @@ export default class Controller {
   handleSelectProject = (id) => {
     this.model.selectProject(id);
   };
+
   handleAddProject = (projectText) => {
     this.model.addProject(projectText);
     this.view.displayProjects(this.model.projects, this.model.activeProjectID);
   };
 
   handleSelectTask = (tabID) => {
-    //double check data
     if (this.view.dataProjectID === this.model.activeProjectID) {
       this.model.activeTaskID = tabID;
     } else {
@@ -41,19 +42,41 @@ export default class Controller {
       );
     }
   };
+
   handleAddTask = (projectID, title, date, description, status, priority) => {
-    // console.log(projectID);
     this.model.addTask(projectID, title, date, description, status, priority);
   };
+
   handleDeleteTask = (projectID, taskID) => {
     this.model.deleteTask(projectID, taskID);
   };
-  handleTaskPriority = (projectID, taskID) => {
-    console.log("gas", projectID, taskID);
 
+  handleTaskPriority = (projectID, taskID) => {
     this.model.toggleTaskPriority(projectID, taskID);
   };
+
   handleTaskComplete = (projectID, taskID) => {
     this.model.toggleTaskComplete(projectID, taskID);
+  };
+
+  handleEditTask = (
+    projectID,
+    taskID,
+    title,
+    date,
+    description,
+    status,
+    priority
+  ) => {
+    // console.log(projectID, taskID);
+    this.model.editTask(
+      projectID,
+      taskID,
+      title,
+      date,
+      description,
+      status,
+      priority
+    );
   };
 }

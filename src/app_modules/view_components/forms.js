@@ -1,9 +1,9 @@
 // Base Form class
 class Form {
-  constructor(form, cHandler, selectedProjectID) {
+  constructor(form, cHandler, projectID) {
     this.form = form;
     this.cHandler = cHandler;
-    this.selectedProjectID = selectedProjectID;
+    this.projectID = projectID;
     this.init();
   }
 
@@ -41,8 +41,8 @@ class Form {
 
 // TaskForm class
 class TaskFormHandler extends Form {
-  constructor(form, cHandler, selectedProjectID) {
-    super(form, cHandler, selectedProjectID);
+  constructor(form, cHandler, projectID) {
+    super(form, cHandler, projectID);
     this.handleTaskForm();
   }
 
@@ -50,9 +50,9 @@ class TaskFormHandler extends Form {
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       const data = this._input(this.form);
-      // console.log(this.selectedProjectID);
+      // console.log(this.projectID);
       this.cHandler(
-        this.selectedProjectID,
+        this.projectID,
         data.get("task_name"),
         data.get("task_date"),
         data.get("task_note"),
@@ -63,17 +63,47 @@ class TaskFormHandler extends Form {
       this._resetInput(this.form);
     });
   }
-  remove(bool) {
-    if (bool) {
+}
+
+class ExtendedTaskFormHandler extends Form {
+  constructor(form, cHandler, projectID, taskId, modal) {
+    super(form, cHandler, projectID);
+    this.taskId = taskId;
+    this.modal = modal;
+    this.handleExtendedTaskForm();
+  }
+
+  handleExtendedTaskForm() {
+    this.form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      // Disable the submit button to prevent multiple submissions
+      const submitButton = this.form.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+
+      const data = this._input(this.form);
+
+      this.cHandler(
+        this.projectID,
+        this.taskId,
+        data.get("task_name"),
+        data.get("task_date"),
+        data.get("task_note"),
+        false,
+        data.get("task_priority")
+      );
+
+      this._resetInput(this.form);
+      this.modal.hide();
       this.form.remove();
-    }
+    });
   }
 }
 
 // ProjectForm class
 class ProjectFormHandler extends Form {
-  constructor(form, cHandler, selectedProjectID) {
-    super(form, cHandler, selectedProjectID);
+  constructor(form, cHandler, projectID) {
+    super(form, cHandler, projectID);
     this.handleProjectForm();
   }
 
@@ -88,4 +118,4 @@ class ProjectFormHandler extends Form {
   }
 }
 
-export { TaskFormHandler, ProjectFormHandler };
+export { TaskFormHandler, ProjectFormHandler, ExtendedTaskFormHandler };

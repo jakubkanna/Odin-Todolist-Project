@@ -2,7 +2,11 @@ import {
   createTabBtnSet,
   ToggleVisibilityBtn,
 } from "./view_components/buttons";
-import { TaskFormHandler, ProjectFormHandler } from "./view_components/forms";
+import {
+  TaskFormHandler,
+  ProjectFormHandler,
+  ExtendedTaskFormHandler,
+} from "./view_components/forms";
 
 export default class View {
   constructor() {
@@ -116,6 +120,9 @@ export default class View {
         if (task.priority === "yes") {
           li.classList.add("important");
         }
+        if (task.status === true) {
+          li.classList.add("complete");
+        }
       });
     }
   }
@@ -142,9 +149,48 @@ export default class View {
   bindToggleTaskPriority(cHandler) {
     this.taskUL = document.querySelector(".tasks");
 
-    new TaskManager(this.taskUL, cHandler, "important-btn");
+    new ToggleHandler(this.taskUL, cHandler, "important-btn");
+  }
+
+  bindToggleTaskComplete(cHandler) {
+    this.taskUL = document.querySelector(".tasks");
+
+    new CompleteHandler(this.taskUL, cHandler, "check-btn");
+  }
+
+  bindEditTask(cHandler) {
+    this.taskUL = document.querySelector(".tasks");
+    new EditHandler(
+      this.taskUL,
+      cHandler,
+      "edit-btn",
+      ".form-tasks",
+      "#editModalOverlay"
+    );
   }
 }
+
+///
+
+class Modal {
+  constructor(element) {
+    this.element = document.querySelector(element);
+  }
+  hide() {
+    this.element.style.display = "none";
+    this.element.classList.remove("active");
+  }
+  show() {
+    if (!this.element.classList.contains("active")) {
+      this.element.style.display = "block";
+      this.element.classList.add("active");
+    }
+  }
+  append(child) {
+    this.element.append(child);
+  }
+}
+
 class ProjectBase {
   constructor(container, handler) {
     this.container = container;
@@ -209,106 +255,74 @@ class RemoveHandler extends TaskManager {
 class ToggleHandler extends TaskManager {
   constructor(container, handler, buttonClass) {
     super(container, handler, buttonClass);
+    this.performToggleAction();
   }
   performToggleAction() {
     this.container.addEventListener("click", (e) => {
+      this.taskTab = e.target.parentElement.parentElement;
+      this.projectId = parseInt(this.taskTab.getAttribute("data-project-id"));
+      this.taskId = parseInt(this.taskTab.getAttribute("data-task-id"));
       if (e.target.classList.contains(this.buttonClass)) {
-        new TaskActionHandler(e, this.buttonClass).toggle(this.handler); //error undefined tasks
+        this.taskTab.classList.toggle("important");
+        this.handler(this.projectId, this.taskId);
+      }
+    });
+    return;
+  }
+}
+class CompleteHandler extends TaskManager {
+  constructor(container, handler, buttonClass) {
+    super(container, handler, buttonClass);
+    this.performToggleCompleteAction();
+  }
+  performToggleCompleteAction() {
+    this.container.addEventListener("click", (e) => {
+      this.taskTab = e.target.parentElement.parentElement;
+      this.projectId = parseInt(this.taskTab.getAttribute("data-project-id"));
+      this.taskId = parseInt(this.taskTab.getAttribute("data-task-id"));
+      if (e.target.classList.contains(this.buttonClass)) {
+        this.taskTab.classList.toggle("complete");
+        this.handler(this.projectId, this.taskId);
+      }
+    });
+    return;
+  }
+}
+
+class EditHandler extends TaskManager {
+  constructor(container, handler, buttonClass, formSelector, modalSelector) {
+    super(container, handler, buttonClass);
+    this.formSelector = formSelector;
+    this.modalSelector = modalSelector;
+    this.performEditAction();
+  }
+
+  performEditAction() {
+    this.container.addEventListener("click", (e) => {
+      const modal = new Modal(this.modalSelector);
+      modal.show();
+
+      const editButton = e.target.closest(`.${this.buttonClass}`);
+      if (editButton) {
+        const taskTab = editButton.closest(".tab");
+        this.projectId = parseInt(taskTab.getAttribute("data-project-id"));
+        this.taskId = parseInt(taskTab.getAttribute("data-task-id"));
+
+        const form = document.querySelector(this.formSelector);
+        const formClone = form.cloneNode(true);
+        formClone.classList.remove(this.formSelector.substring(1));
+        formClone.classList.add("edit-task_" + this.formSelector.substring(1));
+
+        modal.append(formClone);
+
+        const taskForm = new ExtendedTaskFormHandler(
+          formClone,
+          this.handler,
+          this.projectId,
+          this.taskId,
+          modal
+        );
       }
     });
   }
 }
-
-// class TaskActionHandler {
-//   constructor(e, buttonClass) {
-//     this.taskTab = e.target.parentElement.parentElement;
-//     // console.log(this.taskTab);
-//     this.buttonClass = buttonClass;
-
-//     this.projectId = parseInt(this.taskTab.getAttribute("data-project-id"));
-//     // console.log(this.projectId);
-//     this.taskId = parseInt(this.taskTab.getAttribute("data-task-id"));
-//     // console.log(this.taskId);
-//   }
-
-//   toggle(handler) {
-//     // console.log(handler);
-//     if (this.taskTab) {
-//       if (handler) {
-//         this.taskTab.classList.toggle("important");
-//         handler(this.projectId, this.taskId);
-//       }
-//     }
-//     return;
-//   }
-
-//   remove(handler) {
-//     if (this.taskTab) {
-//       if (handler) {
-//         this.taskTab.remove();
-//         handler(this.projectId, this.taskId);
-//       }
-//     }
-//     return;
-//   }
-// }
-
-// class TaskManager extends ProjectBase {
-//   constructor(container, handler, buttonClass) {
-//     super(container, handler);
-//     this.buttonClass = buttonClass;
-
-//     this.projectId = null;
-//     this.taskId = null;
-//   }
-
-//   performDeleteAction() {
-//     this.container.addEventListener("click", (e) => {
-//       if (e.target.classList.contains(this.buttonClass)) {
-//         new TaskActionHandler(e, this.buttonClass).remove(this.handler); //error undefined tasks
-//       }
-//     });
-//   }
-
-//   performToggleAction() {
-//     this.container.addEventListener("click", (e) => {
-//       if (e.target.classList.contains(this.buttonClass)) {
-//         new TaskActionHandler(e, this.buttonClass).toggle(this.handler); //error undefined tasks
-//       }
-//     });
-//   }
-// }
-
-// class TaskActionHandler {
-//   constructor(e, buttonClass) {
-//     this.taskTab = e.target.parentElement.parentElement;
-//     // console.log(this.taskTab);
-//     this.buttonClass = buttonClass;
-
-//     this.projectId = parseInt(this.taskTab.getAttribute("data-project-id"));
-//     // console.log(this.projectId);
-//     this.taskId = parseInt(this.taskTab.getAttribute("data-task-id"));
-//     // console.log(this.taskId);
-//   }
-
-//   toggle(handler) {
-//     // console.log(handler);
-//     if (this.taskTab) {
-//       if (handler) {
-//         this.taskTab.classList.toggle("important");
-//         handler(this.projectId, this.taskId);
-//       }
-//     }
-//     return;
-//   }
-
-//   remove(handler) {
-//     if (this.taskTab) {
-//       if (handler) {
-//         this.taskTab.remove();
-//         handler(this.projectId, this.taskId);
-//       }
-//     }
-//     return;
-//   }
-// }

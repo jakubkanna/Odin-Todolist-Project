@@ -105,6 +105,20 @@ export default class Model {
     this.onProjectChanged(this.projects, this.activeProjectID);
     this._commit(this.projects, this.activeProjectID);
   }
+
+  editTask(projectID, taskID, title, date, description, status, priority) {
+    console.log(title, date, description, status, priority);
+
+    const task = this.projects[projectID].tasks[taskID];
+
+    task.title = title;
+    task.date = date;
+    task.description = description;
+    task.status = status;
+    task.priority = priority;
+    this.onProjectChanged(this.projects, this.activeProjectID);
+    this._commit(this.projects, this.activeProjectID);
+  }
 }
 
 class Project {
