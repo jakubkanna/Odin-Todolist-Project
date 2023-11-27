@@ -1,140 +1,103 @@
 export default class Model {
   constructor() {
-    this.projects = JSON.parse(localStorage.getItem("projects")) || [];
+    this.loadProjects();
     if (this.projects.length === 0) {
       this.default = this.init();
     }
-    this.activeProjectID =
-      JSON.parse(localStorage.getItem("activeProjectID")) || 0;
+    this.activeProjectID = this.loadActiveProjectID() || 0;
   }
+
+  loadProjects() {
+    this.projects = JSON.parse(localStorage.getItem("projects")) || [];
+  }
+
+  loadActiveProjectID() {
+    return JSON.parse(localStorage.getItem("activeProjectID")) || 0;
+  }
+
   init() {
-    //default project
     const project = new Project(0, "Default");
-    //default task
-    const task = new Task(
-      0,
-      0,
-      "Example Task",
-      "01/01/2011",
-      "Lorem",
-      false,
-      "no"
-    );
+    const task = new Task(0, 0, "Example Task", "01/01/2011", "Lorem", false, "no");
     project.tasks.push(task);
     this.projects.push(project);
+    this.saveToLocalStorage();
+  }
+
+  saveToLocalStorage() {
+    localStorage.setItem("projects", JSON.stringify(this.projects));
+    localStorage.setItem("activeProjectID", JSON.stringify(this.activeProjectID));
+    this.onProjectChanged(this.projects, this.activeProjectID);
   }
 
   bindProjectChanged(callback) {
     this.onProjectChanged = callback;
   }
 
-  _commit(projects, activeProjectID) {
-    this.onProjectChanged(this.projects, this.activeProjectID);
-    localStorage.setItem("projects", JSON.stringify(projects));
-    localStorage.setItem("activeProjectID", JSON.stringify(activeProjectID));
-  }
-
   selectProject(id) {
     this.activeProjectID = id;
-    this.onProjectChanged(this.projects, this.activeProjectID);
-    this._commit(this.projects, this.activeProjectID);
+    this.saveToLocalStorage();
   }
+
   addProject(projectTitle) {
-    let id;
-    if (this.projects.length > 0) {
-      id = this.projects[this.projects.length - 1].id + 1;
-    } else {
-      id = 0;
-    }
+    const id = this.projects.length > 0 ? this.projects[this.projects.length - 1].id + 1 : 0;
     const project = new Project(id, projectTitle);
     this.projects.push(project);
-    this.onProjectChanged(this.projects, this.activeProjectID);
-    this._commit(this.projects, this.activeProjectID);
+    this.saveToLocalStorage();
   }
+
   editProject(id, text) {
     this.projects[id].title = text;
-    this.onProjectChanged(this.projects, this.activeProjectID);
-    this._commit(this.projects, this.activeProjectID);
+    this.saveToLocalStorage();
   }
+
   deleteProject(id) {
-    // console.log(id);
     this.projects.splice(id, 1);
     this.activeProjectID = 0;
-    this.onProjectChanged(this.projects, this.activeProjectID);
-    this._commit(this.projects, this.activeProjectID);
+    this.saveToLocalStorage();
   }
 
   selectTask(taskID) {
     this.activeTaskID = taskID;
-    this.onProjectChanged(this.projects, this.activeProjectID);
-    this._commit(this.projects, this.activeProjectID);
+    this.saveToLocalStorage();
   }
 
   addTask(projectID, title, date, description, status, priority) {
-    // console.log(projectID);
     if (projectID < 0 || projectID >= this.projects.length) {
       console.error("Invalid projectID. Task not added.");
       return;
-    } else {
-      const tasks = this.projects[projectID].tasks;
-      const taskID = tasks.length > 0 ? tasks[tasks.length - 1].id + 1 : 0;
-      const task = new Task(
-        projectID,
-        taskID,
-        title,
-        date,
-        description,
-        status,
-        priority
-      );
-      tasks.push(task);
-      this.onProjectChanged(this.projects, this.activeProjectID);
-      this._commit(this.projects, this.activeProjectID);
     }
+
+    const tasks = this.projects[projectID].tasks;
+    const taskID = tasks.length > 0 ? tasks[tasks.length - 1].id + 1 : 0;
+    const task = new Task(projectID, taskID, title, date, description, status, priority);
+    tasks.push(task);
+    this.saveToLocalStorage();
   }
+
   deleteTask(projectID, taskID) {
     this.projects[projectID].tasks.splice(taskID, 1);
-    this.onProjectChanged(this.projects, this.activeProjectID);
-    this._commit(this.projects, this.activeProjectID);
+    this.saveToLocalStorage();
   }
+
   toggleTaskPriority(projectID, taskID) {
     const task = this.projects[projectID].tasks[taskID];
-    if (task.priority === "no") {
-      task.priority = "yes";
-    } else {
-      task.priority = "no";
-    }
-
-    this.onProjectChanged(this.projects, this.activeProjectID);
-    this._commit(this.projects, this.activeProjectID);
+    task.priority = task.priority === "no" ? "yes" : "no";
+    this.saveToLocalStorage();
   }
+
   toggleTaskComplete(projectID, taskID) {
     const task = this.projects[projectID].tasks[taskID];
-
     task.status = !task.status;
-
-    this.onProjectChanged(this.projects, this.activeProjectID);
-    this._commit(this.projects, this.activeProjectID);
+    this.saveToLocalStorage();
   }
 
   editTask(projectID, title, date, description, priority, taskID) {
-    console.log("model:", title, projectID, taskID);
-
-    // Check if the task exists
-
     const task = this.projects[projectID].tasks[taskID];
-    // console.log("Task:", task);
-
-    // Update task properties
     task.title = title;
     task.date = date;
     task.description = description;
-    task.status = status;
     task.priority = priority;
-
-    // Continue with the rest of your logic
-    this.onProjectChanged(this.projects, this.activeProjectID);
-    this._commit(this.projects, this.activeProjectID);
+    this.saveToLocalStorage();
   }
 }
 
@@ -145,6 +108,7 @@ class Project {
     this.tasks = [];
   }
 }
+
 class Task {
   constructor(projectID, id, title, date, description, status, priority) {
     this.projectID = projectID;
