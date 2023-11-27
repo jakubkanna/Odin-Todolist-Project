@@ -10,7 +10,7 @@ export default class Controller {
     this.view.bindSelectProject(this.handleSelectProject);
     this.view.bindAddProject(this.handleAddProject);
     this.view.bindDeleteProject(this.handleDeleteProject);
-    // this.view.bindEditProject(this.handleEditProject); //unfinished
+    this.view.bindEditProject(this.handleEditProject); //unfinished
 
     this.view.bindAddTask(this.handleAddTask, this.model.activeProjectID);
     this.view.bindDeleteTask(this.handleDeleteTask);
@@ -42,9 +42,7 @@ export default class Controller {
   handleDeleteProject = (id) => {
     this.model.deleteProject(id);
   };
-  handleEditProject = (id, text) => {
-    this.model.editProject(id, text);
-  };
+
   handleAddTask = (title, date, description, status, priority) => {
     this.model.addTask(
       this.model.activeProjectID,
@@ -68,24 +66,17 @@ export default class Controller {
     this.model.toggleTaskComplete(projectID, taskID);
   };
 
-  handleEditTask = (
-    projectID,
-    taskID,
-    title,
-    date,
-    description,
-    status,
-    priority
-  ) => {
-    // console.log(projectID, taskID);
-    this.model.editTask(
-      projectID,
-      taskID,
-      title,
-      date,
-      description,
-      status,
-      priority
-    );
+  handleEditTask = (projectID, formData, taskID) => {
+    // console.log("controller:", projectID, formData, taskID); //logs: controller: 1 (4) ['w', '', '', 'no'] 1
+
+    //how do i pass data ?
+    const [title = "", date = "", description = "", priority = ""] = formData;
+
+    this.model.editTask(projectID, title, date, description, priority, taskID);
+  };
+  handleEditProject = (id, text) => {
+    const textString = text.toString();
+    console.log(id, textString);
+    this.model.editProject(id, textString);
   };
 }

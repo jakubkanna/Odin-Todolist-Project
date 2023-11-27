@@ -64,9 +64,10 @@ class TaskFormHandler extends Form {
 }
 
 class ExtendedTaskFormHandler extends Form {
-  constructor(form, cHandler, projectID, taskId, modal) {
+  constructor(form, cHandler, projectID, taskID, modal) {
+    console.log("form taskid:", taskID);
     super(form, cHandler, projectID);
-    this.taskId = taskId;
+    this.taskID = taskID;
     this.modal = modal;
     this.handleExtendedTaskForm();
   }
@@ -74,27 +75,32 @@ class ExtendedTaskFormHandler extends Form {
   handleExtendedTaskForm() {
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
+      // console.log(this.taskID);
 
       // Disable the submit button to prevent multiple submissions
       const submitButton = this.form.querySelector('button[type="submit"]');
       submitButton.disabled = true;
 
-      const data = this._input(this.form);
-
-      this.cHandler(
-        this.projectID,
-        this.taskId,
-        data.get("task_name"),
-        data.get("task_date"),
-        data.get("task_note"),
-        false,
-        data.get("task_priority")
-      );
-
+      const formData = this._serializeForm(this.form);
+      // console.log("form data:", formData);
+      // console.log("form chandl", this.cHandler);
+      this.cHandler(this.projectID, formData, this.taskID);
       this._resetInput(this.form);
       this.modal.hide();
       this.form.remove();
     });
+  }
+
+  _serializeForm(form) {
+    const formData = new FormData(form);
+    const serializedData = [];
+
+    // Iterate over form data entries
+    formData.forEach((value, key) => {
+      serializedData.push(value);
+    });
+
+    return [...serializedData]; // Convert to an array
   }
 }
 

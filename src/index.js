@@ -11,5 +11,4 @@ document.addEventListener("DOMContentLoaded", () => {
 //What can be added?
 //burger icon func.
 //tasks filter by date
-//classes optimization (especially for view)
 //project title edit button

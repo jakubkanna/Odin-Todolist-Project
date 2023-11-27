@@ -53,6 +53,8 @@ export default class Model {
   }
   editProject(id, text) {
     this.projects[id].title = text;
+    this.onProjectChanged(this.projects, this.activeProjectID);
+    this._commit(this.projects, this.activeProjectID);
   }
   deleteProject(id) {
     // console.log(id);
@@ -115,16 +117,22 @@ export default class Model {
     this._commit(this.projects, this.activeProjectID);
   }
 
-  editTask(projectID, taskID, title, date, description, status, priority) {
-    console.log(title, date, description, status, priority);
+  editTask(projectID, title, date, description, priority, taskID) {
+    console.log("model:", title, projectID, taskID);
+
+    // Check if the task exists
 
     const task = this.projects[projectID].tasks[taskID];
+    // console.log("Task:", task);
 
+    // Update task properties
     task.title = title;
     task.date = date;
     task.description = description;
     task.status = status;
     task.priority = priority;
+
+    // Continue with the rest of your logic
     this.onProjectChanged(this.projects, this.activeProjectID);
     this._commit(this.projects, this.activeProjectID);
   }

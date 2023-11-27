@@ -37,7 +37,7 @@ function createTabBtnSet() {
   ];
 }
 function createProjectLIBtnSet() {
-  return [new CloseButton()];
+  return [new EditButton(), new CloseButton()];
 }
 class ToggleVisibilityBtn {
   constructor(button, box) {
