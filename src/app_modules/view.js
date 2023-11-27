@@ -1,12 +1,11 @@
-import {
-  createTabBtnSet,
-  ToggleVisibilityBtn,
-} from "./view_components/buttons";
+import { ToggleVisibilityBtn } from "./view_components/buttons";
 import {
   TaskFormHandler,
   ProjectFormHandler,
   ExtendedTaskFormHandler,
 } from "./view_components/forms";
+import { ProjectDisplay, TaskDisplay } from "./view_components/display";
+import Modal from "./view_components/modal.js";
 
 export default class View {
   constructor() {
@@ -14,19 +13,29 @@ export default class View {
     this.projectLI;
     this.taskUL = document.querySelector(".tasks");
     this.taskLI;
-    this.dataProjectID = 0; //default
-    this.dataTaskID = 0; //default
     this.projectForm = document.querySelector(".form-projects");
     this.taskForm = document.querySelector(".form-tasks");
+    this.dataProjectID;
+
+    this.projectDisplay = new ProjectDisplay(this.projectUL, this.taskUL);
+    this.taskDisplay = new TaskDisplay(this.taskUL);
+
+    this._temporaryProjectText;
 
     this.init();
   }
 
-  //Initialization
-
   init() {
     new ToggleVisibilityBtn(".new-project-button", ".new-projects-box");
     new ToggleVisibilityBtn(".new-task-button", ".new-task-box");
+    this._initLocalListeners();
+  }
+  _initLocalListeners() {
+    this.projectUL.addEventListener("input", (event) => {
+      if (event.target.className === "editable") {
+        this._temporaryProjectText = event.target.innerText;
+      }
+    });
   }
   createElement(tag, className) {
     const element = document.createElement(tag);
@@ -37,113 +46,47 @@ export default class View {
     const element = document.querySelector(selector);
     return element;
   }
-
-  // Display logic
-
-  displayProjects(projects, activeProjectID) {
-    // console.log(activeProjectID, projects);
-    // console.log(projects[activeProjectID]);
-    //clean dom
-    while (this.projectUL.firstChild) {
-      this.projectUL.removeChild(this.projectUL.firstChild);
-    }
-    // Show default message
-    if (projects.length === 0) {
-      const p = this.createElement("p");
-      p.textContent = "Empty";
-      this.projectUL.append(p);
-    }
-    //create list
-    else {
-      projects.forEach((project) => {
-        const li = this.createElement("li");
-        li.classList.add("list-item");
-
-        li.setAttribute("data-project-id", project.id);
-        const span = this.createElement("span");
-        span.textContent = project.title;
-        li.append(span);
-        this.projectUL.append(li);
-
-        this.displayTasks(projects[activeProjectID]);
-      });
-    }
-  }
-
-  displayTasks(project) {
-    // Clear existing tasks
-    this.taskUL.innerHTML = "";
-    // console.log(project);
-    if (project.tasks.length === 0) {
-      const p = this.createElement("p");
-      p.textContent = "Empty";
-      this.taskUL.append(p);
-    } else {
-      project.tasks.forEach((task) => {
-        const li = this.createElement("li");
-        li.classList.add("tab");
-        li.setAttribute("data-project-id", project.id);
-        li.setAttribute("data-task-id", task.id);
-
-        // Title
-        const titleSpan = this.createElement("span");
-        titleSpan.textContent = task.title;
-        titleSpan.classList.add("tab-content-field");
-        li.append(titleSpan);
-
-        // Date
-        const dateSpan = this.createElement("span");
-        dateSpan.textContent = task.date;
-        dateSpan.classList.add("tab-content-field", "date-field");
-
-        li.append(dateSpan);
-
-        // Settings
-        const settingsDiv = this.createElement("div");
-        const buttons = createTabBtnSet(); // Create a new set of buttons for each task
-        buttons.forEach((button) => {
-          settingsDiv.append(button.getElement());
-        });
-        settingsDiv.classList.add("tab-content-field");
-
-        li.append(settingsDiv);
-
-        // Description
-        const descriptionDiv = this.createElement("span");
-        descriptionDiv.textContent = task.description;
-        descriptionDiv.classList.add("tab-content-field");
-
-        li.append(descriptionDiv);
-
-        this.taskUL.append(li);
-
-        if (task.priority === "yes") {
-          li.classList.add("important");
-        }
-        if (task.status === true) {
-          li.classList.add("complete");
-        }
-      });
-    }
+  displayProjectsAndTasks(projects, activeProjectID) {
+    const displayTasksCallback = this.taskDisplay.displayTasks.bind(
+      this.taskDisplay
+    );
+    this.projectDisplay.displayProjects(
+      projects,
+      activeProjectID,
+      displayTasksCallback
+    );
   }
 
   //binders
   bindSelectProject(cHandler) {
-    this.projectLI = document.querySelector("li.list-item"); // update
+    this.projectUL = document.querySelector("ul.list-projects");
+    this.projectLI = document.querySelector("li.list-item");
     new ProjectSelector(this.projectUL, this.projectLI, cHandler);
   }
-
   bindAddProject(cHandler) {
     new ProjectFormHandler(this.projectForm, cHandler);
   }
-
-  bindAddTask(cHandler, selectedProjectID) {
-    new TaskFormHandler(this.taskForm, cHandler, selectedProjectID);
+  bindDeleteProject(cHandler) {
+    this.projectUL = document.querySelector("ul.list-projects");
+    new RemoveProjectHandler(this.projectUL, cHandler, "close-btn");
+  }
+  bindEditProject(cHandler) {
+    const container = this.projectUL;
+    const childrenSelector = "li.list-item";
+    new EditProjectHanndler(
+      container,
+      childrenSelector,
+      cHandler,
+      this._temporaryProjectText
+    );
+  }
+  bindAddTask(cHandler) {
+    new TaskFormHandler(this.taskForm, cHandler);
   }
 
   bindDeleteTask(cHandler) {
     this.taskUL = document.querySelector(".tasks");
-    new RemoveHandler(this.taskUL, cHandler, "close-btn");
+    new RemoveTaskHandler(this.taskUL, cHandler, "close-btn");
   }
 
   bindToggleTaskPriority(cHandler) {
@@ -170,35 +113,16 @@ export default class View {
   }
 }
 
-///
+/// could be improved
 
-class Modal {
-  constructor(element) {
-    this.element = document.querySelector(element);
-  }
-  hide() {
-    this.element.style.display = "none";
-    this.element.classList.remove("active");
-  }
-  show() {
-    if (!this.element.classList.contains("active")) {
-      this.element.style.display = "block";
-      this.element.classList.add("active");
-    }
-  }
-  append(child) {
-    this.element.append(child);
-  }
-}
-
-class ProjectBase {
+class Base {
   constructor(container, handler) {
     this.container = container;
     this.handler = handler;
   }
 }
 
-class ProjectSelector extends ProjectBase {
+class ProjectSelector extends Base {
   constructor(container, projectElement, handler) {
     super(container, handler);
     this.projectElement = projectElement;
@@ -212,16 +136,15 @@ class ProjectSelector extends ProjectBase {
         `.${this.projectElement.className}`
       );
       if (clickedProject) {
-        this.projectId = parseInt(
-          clickedProject.getAttribute("data-project-id")
-        );
+        let id = parseInt(clickedProject.getAttribute("data-project-id"));
+        this.projectId = id;
       }
       if (this.handler) this.handler(this.projectId);
     });
   }
 }
 
-class TaskManager extends ProjectBase {
+class Manager extends Base {
   constructor(container, handler, buttonClass) {
     super(container, handler);
     this.buttonClass = buttonClass;
@@ -230,7 +153,7 @@ class TaskManager extends ProjectBase {
   }
 }
 
-class RemoveHandler extends TaskManager {
+class RemoveTaskHandler extends Manager {
   constructor(container, handler, buttonClass) {
     super(container, handler, buttonClass);
 
@@ -238,21 +161,56 @@ class RemoveHandler extends TaskManager {
 
     this.performDeleteAction();
   }
+
   performDeleteAction() {
     this.container.addEventListener("click", (e) => {
-      this.taskTab = e.target.parentElement.parentElement;
-      this.projectId = parseInt(this.taskTab.getAttribute("data-project-id"));
-      this.taskId = parseInt(this.taskTab.getAttribute("data-task-id"));
-      if (e.target.classList.contains(this.buttonClass)) {
-        this.taskTab.remove();
-        this.handler(this.projectId, this.taskId);
+      this.element = e.target.parentElement.parentElement;
+
+      // Check if element is defined before accessing its attributes
+      if (this.element) {
+        this.projectId = parseInt(this.element.getAttribute("data-project-id"));
+        this.taskId = parseInt(this.element.getAttribute("data-task-id"));
+
+        if (e.target.classList.contains(this.buttonClass)) {
+          this.element.remove();
+          this.handler(this.projectId, this.taskId);
+        }
       }
     });
-    return;
   }
 }
 
-class ToggleHandler extends TaskManager {
+class RemoveProjectHandler extends Manager {
+  constructor(container, handler, buttonClass) {
+    super(container, handler, buttonClass);
+
+    this.buttonClass = buttonClass;
+
+    this.performDeleteAction();
+  }
+
+  performDeleteAction() {
+    this.container.addEventListener("click", (e) => {
+      this.parentClass = this.container.firstChild.className;
+
+      // Find the closest parent element with the specified parent class
+      this.element = e.target.closest(`.${this.parentClass}`);
+
+      // Check if element is defined before accessing its attributes
+      if (this.element) {
+        this.projectId = parseInt(this.element.getAttribute("data-project-id"));
+        this.taskId = parseInt(this.element.getAttribute("data-task-id"));
+
+        if (e.target.classList.contains(this.buttonClass)) {
+          this.element.remove();
+          this.handler(this.projectId, this.taskId);
+        }
+      }
+    });
+  }
+}
+
+class ToggleHandler extends Manager {
   constructor(container, handler, buttonClass) {
     super(container, handler, buttonClass);
     this.performToggleAction();
@@ -270,7 +228,7 @@ class ToggleHandler extends TaskManager {
     return;
   }
 }
-class CompleteHandler extends TaskManager {
+class CompleteHandler extends Manager {
   constructor(container, handler, buttonClass) {
     super(container, handler, buttonClass);
     this.performToggleCompleteAction();
@@ -289,7 +247,7 @@ class CompleteHandler extends TaskManager {
   }
 }
 
-class EditHandler extends TaskManager {
+class EditHandler extends Manager {
   constructor(container, handler, buttonClass, formSelector, modalSelector) {
     super(container, handler, buttonClass);
     this.formSelector = formSelector;

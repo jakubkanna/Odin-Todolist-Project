@@ -7,3 +7,9 @@ import Controller from "./app_modules/controller";
 document.addEventListener("DOMContentLoaded", () => {
   window.app = new Controller(new Model(), new View());
 });
+
+//What can be added?
+//burger icon func.
+//tasks filter by date
+//classes optimization (especially for view)
+//project title edit button

@@ -41,8 +41,8 @@ class Form {
 
 // TaskForm class
 class TaskFormHandler extends Form {
-  constructor(form, cHandler, projectID) {
-    super(form, cHandler, projectID);
+  constructor(form, cHandler) {
+    super(form, cHandler);
     this.handleTaskForm();
   }
 
@@ -50,9 +50,7 @@ class TaskFormHandler extends Form {
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       const data = this._input(this.form);
-      // console.log(this.projectID);
       this.cHandler(
-        this.projectID,
         data.get("task_name"),
         data.get("task_date"),
         data.get("task_note"),

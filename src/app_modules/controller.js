@@ -9,17 +9,24 @@ export default class Controller {
 
     this.view.bindSelectProject(this.handleSelectProject);
     this.view.bindAddProject(this.handleAddProject);
-    // console.log(this.model.activeProjectID);
+    this.view.bindDeleteProject(this.handleDeleteProject);
+    // this.view.bindEditProject(this.handleEditProject); //unfinished
+
     this.view.bindAddTask(this.handleAddTask, this.model.activeProjectID);
     this.view.bindDeleteTask(this.handleDeleteTask);
     this.view.bindToggleTaskPriority(this.handleTaskPriority);
     this.view.bindToggleTaskComplete(this.handleTaskComplete);
     this.view.bindEditTask(this.handleEditTask);
   }
+
   // Initialization
 
   onProjectChanged = (projects, activeProjectID) => {
-    this.view.displayProjects(projects, activeProjectID);
+    this.view.projectDisplay.displayProjects(
+      projects,
+      activeProjectID,
+      (project) => this.view.taskDisplay.displayTasks(project)
+    );
   };
 
   //handlers
@@ -30,21 +37,23 @@ export default class Controller {
 
   handleAddProject = (projectText) => {
     this.model.addProject(projectText);
-    this.view.displayProjects(this.model.projects, this.model.activeProjectID);
   };
 
-  handleSelectTask = (tabID) => {
-    if (this.view.dataProjectID === this.model.activeProjectID) {
-      this.model.activeTaskID = tabID;
-    } else {
-      console.error(
-        "The dataProjectID does not match the activeProjectID. Unable to set selectedTask."
-      );
-    }
+  handleDeleteProject = (id) => {
+    this.model.deleteProject(id);
   };
-
-  handleAddTask = (projectID, title, date, description, status, priority) => {
-    this.model.addTask(projectID, title, date, description, status, priority);
+  handleEditProject = (id, text) => {
+    this.model.editProject(id, text);
+  };
+  handleAddTask = (title, date, description, status, priority) => {
+    this.model.addTask(
+      this.model.activeProjectID,
+      title,
+      date,
+      description,
+      status,
+      priority
+    );
   };
 
   handleDeleteTask = (projectID, taskID) => {

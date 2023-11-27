@@ -36,8 +36,8 @@ function createTabBtnSet() {
     new CloseButton(),
   ];
 }
-function createProjectLiItemBtnSet() {
-  return [new ExclamationButton(), new CloseButton()];
+function createProjectLIBtnSet() {
+  return [new CloseButton()];
 }
 class ToggleVisibilityBtn {
   constructor(button, box) {
@@ -65,4 +65,4 @@ class ToggleVisibilityBtn {
     this.isVisible = false;
   }
 }
-export { createTabBtnSet, ToggleVisibilityBtn };
+export { createTabBtnSet, createProjectLIBtnSet, ToggleVisibilityBtn };

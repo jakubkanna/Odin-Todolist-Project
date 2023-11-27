@@ -6,7 +6,6 @@ export default class Model {
     }
     this.activeProjectID =
       JSON.parse(localStorage.getItem("activeProjectID")) || 0;
-    this.activeTaskID = JSON.parse(localStorage.getItem("activeTaskID")) || 0;
   }
   init() {
     //default project
@@ -49,6 +48,16 @@ export default class Model {
     }
     const project = new Project(id, projectTitle);
     this.projects.push(project);
+    this.onProjectChanged(this.projects, this.activeProjectID);
+    this._commit(this.projects, this.activeProjectID);
+  }
+  editProject(id, text) {
+    this.projects[id].title = text;
+  }
+  deleteProject(id) {
+    // console.log(id);
+    this.projects.splice(id, 1);
+    this.activeProjectID = 0;
     this.onProjectChanged(this.projects, this.activeProjectID);
     this._commit(this.projects, this.activeProjectID);
   }
