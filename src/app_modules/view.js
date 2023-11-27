@@ -10,9 +10,9 @@ import Modal from "./view_components/modal.js";
 export default class View {
   constructor() {
     this.projectUL = document.querySelector("ul.list-projects");
-    this.projectLI;
+    this.projectLI = document.querySelector("li.list-item");
     this.taskUL = document.querySelector(".tasks");
-    this.taskLI;
+    this.taskLI = document.querySelector(".tab");
     this.projectForm = document.querySelector(".form-projects");
     this.taskForm = document.querySelector(".form-tasks");
     this.dataProjectID;
@@ -28,6 +28,7 @@ export default class View {
   init() {
     new ToggleVisibilityBtn(".new-project-button", ".new-projects-box");
     new ToggleVisibilityBtn(".new-task-button", ".new-task-box");
+
     this._initLocalListeners();
   }
   _initLocalListeners() {
@@ -61,24 +62,21 @@ export default class View {
   bindSelectProject(cHandler) {
     this.projectUL = document.querySelector("ul.list-projects");
     this.projectLI = document.querySelector("li.list-item");
-    new ProjectSelector(this.projectUL, this.projectLI, cHandler);
+
+    this.projectULHandler = new ProjectContainerHandler(
+      this.projectUL,
+      cHandler
+    );
   }
   bindAddProject(cHandler) {
     new ProjectFormHandler(this.projectForm, cHandler);
   }
   bindDeleteProject(cHandler) {
     this.projectUL = document.querySelector("ul.list-projects");
-    new RemoveProjectHandler(this.projectUL, cHandler, "close-btn");
+    this.projectULHandler.projectLiHandler().deleteHandler(cHandler);
   }
   bindEditProject(cHandler) {
-    const container = this.projectUL;
-    const childrenSelector = "li.list-item";
-    new EditProjectHanndler(
-      container,
-      childrenSelector,
-      cHandler,
-      this._temporaryProjectText
-    );
+    this.projectUL = document.querySelector("ul.list-projects");
   }
   bindAddTask(cHandler) {
     new TaskFormHandler(this.taskForm, cHandler);
@@ -86,201 +84,139 @@ export default class View {
 
   bindDeleteTask(cHandler) {
     this.taskUL = document.querySelector(".tasks");
-    new RemoveTaskHandler(this.taskUL, cHandler, "close-btn");
   }
-
   bindToggleTaskPriority(cHandler) {
     this.taskUL = document.querySelector(".tasks");
-
-    new ToggleHandler(this.taskUL, cHandler, "important-btn");
   }
 
   bindToggleTaskComplete(cHandler) {
     this.taskUL = document.querySelector(".tasks");
-
-    new CompleteHandler(this.taskUL, cHandler, "check-btn");
   }
 
   bindEditTask(cHandler) {
     this.taskUL = document.querySelector(".tasks");
-    new EditHandler(
-      this.taskUL,
-      cHandler,
-      "edit-btn",
-      ".form-tasks",
-      "#editModalOverlay"
-    );
   }
 }
 
-/// could be improved
+//ContainerHandler class
+//add listener to container  constructor(projectUL) / constructor(taskUL)
+//save event target each time it's pressed this.conEventTarget
+//add method to get projectLI/taskLI classname
+//ProjectContainerHandler extends ContainerHandler, TaskContainerHandler extends ContainerHandler
+//getLIClassName = projectLiClassName, taskLiClassName
+//ProjectContainerHandler has method selectProject if(this.conEventTarget.className === projectLiClassName) call handler
+//ProjectLiHandler extends ProjectContainerHandler
+//TaskLiHandler extends TaskContainerHandler
 
-class Base {
-  constructor(container, handler) {
+//create Handlers: Add, Delete, Edit, Complete, Priority which will have own action(handler) method
+
+//projectlihandler should have delete
+//tasklihandler should have priority, complete, edit, delete
+
+//if this.conEventTarget === button.classList pressed inside each contains class close-btn create delete handler for it
+//
+
+class ContainerHandler {
+  constructor(container) {
     this.container = container;
-    this.handler = handler;
-  }
-}
-
-class ProjectSelector extends Base {
-  constructor(container, projectElement, handler) {
-    super(container, handler);
-    this.projectElement = projectElement;
-    this.projectId = null;
-    this.setupClickEvent();
+    this.conEventTarget = null;
+    this.listen();
   }
 
-  setupClickEvent() {
+  listen() {
     this.container.addEventListener("click", (event) => {
-      const clickedProject = event.target.closest(
-        `.${this.projectElement.className}`
+      this.conEventTarget = event.target;
+      // console.log(this.container);
+
+      this.handleEvent();
+    });
+  }
+
+  handleEvent() {
+    // To be implemented by subclasses
+  }
+}
+
+class ProjectContainerHandler extends ContainerHandler {
+  constructor(container, cHandler) {
+    super(container);
+    this.liClassName = this.getLIClassName();
+    this.projectID = null; // Add this line to declare projectID
+    this.cHandler = cHandler;
+  }
+  projectLiHandler() {
+    return new ProjectLiHandler(this.container);
+  }
+  handleEvent() {
+    // Customize handling here if needed
+    this.selectProject();
+  }
+
+  getLIClassName() {
+    if (this.container) {
+      return this.container.firstElementChild.className;
+    } else {
+      console.error(this.container, "has no children");
+      return null;
+    }
+  }
+
+  selectProject() {
+    // console.log(cHandler);
+    if (this.conEventTarget) {
+      const closestListItem = this.conEventTarget.closest(
+        `.${this.liClassName}`
       );
-      if (clickedProject) {
-        let id = parseInt(clickedProject.getAttribute("data-project-id"));
-        this.projectId = id;
+      if (closestListItem) {
+        this.projectID = closestListItem.getAttribute("data-project-id");
+        this.cHandler(this.projectID);
       }
-      if (this.handler) this.handler(this.projectId);
-    });
+    }
+  }
+}
+class ProjectLiHandler extends ProjectContainerHandler {
+  constructor(container) {
+    super(container);
+    this.liElement = null;
+    this.button = null;
+    this.handlers = []; //add new handlers here
+  }
+  deleteHandler(handler) {
+    const deleteHandler = new Delete(handler);
+    this.handlers.push(deleteHandler);
+  }
+  selectProject() {}
+  handleEvent() {
+    this.liElement = this.conEventTarget.closest(`.${this.liClassName}`);
+    this.deleteButton = this.liElement.querySelector("button.close-btn");
+    this.projectID = this.liElement.getAttribute("data-project-id");
+
+    // Match clicked button class with handler
+    const matchedHandler = this.handlers.find((handler) =>
+      this.conEventTarget.classList.contains(handler.buttonClass)
+    );
+    console.log(matchedHandler);
+
+    // Do action for the matched handler
+    if (matchedHandler) {
+      matchedHandler.action(this.projectID);
+    }
   }
 }
 
-class Manager extends Base {
-  constructor(container, handler, buttonClass) {
-    super(container, handler);
-    this.buttonClass = buttonClass;
-    this.projectId = null;
-    this.taskId = null;
-  }
+class Action {
+  constructor() {}
 }
 
-class RemoveTaskHandler extends Manager {
-  constructor(container, handler, buttonClass) {
-    super(container, handler, buttonClass);
-
-    this.buttonClass = buttonClass;
-
-    this.performDeleteAction();
+class Delete extends Action {
+  constructor(handler) {
+    super();
+    this.handler = handler;
+    this.buttonClass = "close-btn";
   }
 
-  performDeleteAction() {
-    this.container.addEventListener("click", (e) => {
-      this.element = e.target.parentElement.parentElement;
-
-      // Check if element is defined before accessing its attributes
-      if (this.element) {
-        this.projectId = parseInt(this.element.getAttribute("data-project-id"));
-        this.taskId = parseInt(this.element.getAttribute("data-task-id"));
-
-        if (e.target.classList.contains(this.buttonClass)) {
-          this.element.remove();
-          this.handler(this.projectId, this.taskId);
-        }
-      }
-    });
-  }
-}
-
-class RemoveProjectHandler extends Manager {
-  constructor(container, handler, buttonClass) {
-    super(container, handler, buttonClass);
-
-    this.buttonClass = buttonClass;
-
-    this.performDeleteAction();
-  }
-
-  performDeleteAction() {
-    this.container.addEventListener("click", (e) => {
-      this.parentClass = this.container.firstChild.className;
-
-      // Find the closest parent element with the specified parent class
-      this.element = e.target.closest(`.${this.parentClass}`);
-
-      // Check if element is defined before accessing its attributes
-      if (this.element) {
-        this.projectId = parseInt(this.element.getAttribute("data-project-id"));
-        this.taskId = parseInt(this.element.getAttribute("data-task-id"));
-
-        if (e.target.classList.contains(this.buttonClass)) {
-          this.element.remove();
-          this.handler(this.projectId, this.taskId);
-        }
-      }
-    });
-  }
-}
-
-class ToggleHandler extends Manager {
-  constructor(container, handler, buttonClass) {
-    super(container, handler, buttonClass);
-    this.performToggleAction();
-  }
-  performToggleAction() {
-    this.container.addEventListener("click", (e) => {
-      this.taskTab = e.target.parentElement.parentElement;
-      this.projectId = parseInt(this.taskTab.getAttribute("data-project-id"));
-      this.taskId = parseInt(this.taskTab.getAttribute("data-task-id"));
-      if (e.target.classList.contains(this.buttonClass)) {
-        this.taskTab.classList.toggle("important");
-        this.handler(this.projectId, this.taskId);
-      }
-    });
-    return;
-  }
-}
-class CompleteHandler extends Manager {
-  constructor(container, handler, buttonClass) {
-    super(container, handler, buttonClass);
-    this.performToggleCompleteAction();
-  }
-  performToggleCompleteAction() {
-    this.container.addEventListener("click", (e) => {
-      this.taskTab = e.target.parentElement.parentElement;
-      this.projectId = parseInt(this.taskTab.getAttribute("data-project-id"));
-      this.taskId = parseInt(this.taskTab.getAttribute("data-task-id"));
-      if (e.target.classList.contains(this.buttonClass)) {
-        this.taskTab.classList.toggle("complete");
-        this.handler(this.projectId, this.taskId);
-      }
-    });
-    return;
-  }
-}
-
-class EditHandler extends Manager {
-  constructor(container, handler, buttonClass, formSelector, modalSelector) {
-    super(container, handler, buttonClass);
-    this.formSelector = formSelector;
-    this.modalSelector = modalSelector;
-    this.performEditAction();
-  }
-
-  performEditAction() {
-    this.container.addEventListener("click", (e) => {
-      const modal = new Modal(this.modalSelector);
-      modal.show();
-
-      const editButton = e.target.closest(`.${this.buttonClass}`);
-      if (editButton) {
-        const taskTab = editButton.closest(".tab");
-        this.projectId = parseInt(taskTab.getAttribute("data-project-id"));
-        this.taskId = parseInt(taskTab.getAttribute("data-task-id"));
-
-        const form = document.querySelector(this.formSelector);
-        const formClone = form.cloneNode(true);
-        formClone.classList.remove(this.formSelector.substring(1));
-        formClone.classList.add("edit-task_" + this.formSelector.substring(1));
-
-        modal.append(formClone);
-
-        const taskForm = new ExtendedTaskFormHandler(
-          formClone,
-          this.handler,
-          this.projectId,
-          this.taskId,
-          modal
-        );
-      }
-    });
+  action(projectID, taskID) {
+    console.log(projectID, taskID);
+    this.handler(projectID, taskID);
   }
 }
