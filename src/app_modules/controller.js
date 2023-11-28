@@ -3,16 +3,17 @@ export default class Controller {
     this.model = model;
     this.view = view;
 
+    // Initialize
     this.onProjectChanged(this.model.projects, this.model.activeProjectID);
-
     this.model.bindProjectChanged(this.onProjectChanged);
 
+    // Bind view events to handlers
     this.view.bindSelectProject(this.handleSelectProject);
     this.view.bindAddProject(this.handleAddProject);
     this.view.bindDeleteProject(this.handleDeleteProject);
-    this.view.bindEditProject(this.handleEditProject); //unfinished
+    this.view.bindEditProject(this.handleEditProject);
 
-    this.view.bindAddTask(this.handleAddTask, this.model.activeProjectID);
+    this.view.bindAddTask(this.handleAddTask);
     this.view.bindDeleteTask(this.handleDeleteTask);
     this.view.bindToggleTaskPriority(this.handleTaskPriority);
     this.view.bindToggleTaskComplete(this.handleTaskComplete);
@@ -24,12 +25,12 @@ export default class Controller {
   onProjectChanged = (projects, activeProjectID) => {
     this.view.projectDisplay.displayProjects(
       projects,
-      activeProjectID,
+      parseInt(activeProjectID),
       (project) => this.view.taskDisplay.displayTasks(project)
     );
   };
 
-  //handlers
+  // Handlers
 
   handleSelectProject = (id) => {
     this.model.selectProject(id);
@@ -67,16 +68,18 @@ export default class Controller {
   };
 
   handleEditTask = (projectID, formData, taskID) => {
-    // console.log("controller:", projectID, formData, taskID); //logs: controller: 1 (4) ['w', '', '', 'no'] 1
-
-    //how do i pass data ?
-    const [title = "", date = "", description = "", priority = ""] = formData;
-
-    this.model.editTask(projectID, title, date, description, priority, taskID);
+    const [title, date, description, priority] = formData;
+    const taskData = {
+      title: title || "",
+      date: date || "",
+      description: description || "",
+      priority: priority || "no",
+    };
+    this.model.editTask(projectID, taskID, taskData);
   };
+
   handleEditProject = (id, text) => {
     const textString = text.toString();
-    console.log(id, textString);
     this.model.editProject(id, textString);
   };
 }

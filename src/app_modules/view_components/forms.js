@@ -63,7 +63,7 @@ class TaskFormHandler extends Form {
   }
 }
 
-class ExtendedTaskFormHandler extends Form {
+class FormCopyHandler extends Form {
   constructor(form, cHandler, projectID, taskID, modal) {
     console.log("form taskid:", taskID);
     super(form, cHandler, projectID);
@@ -75,15 +75,12 @@ class ExtendedTaskFormHandler extends Form {
   handleExtendedTaskForm() {
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
-      // console.log(this.taskID);
 
-      // Disable the submit button to prevent multiple submissions
       const submitButton = this.form.querySelector('button[type="submit"]');
       submitButton.disabled = true;
 
       const formData = this._serializeForm(this.form);
-      // console.log("form data:", formData);
-      // console.log("form chandl", this.cHandler);
+
       this.cHandler(this.projectID, formData, this.taskID);
       this._resetInput(this.form);
       this.modal.hide();
@@ -122,4 +119,4 @@ class ProjectFormHandler extends Form {
   }
 }
 
-export { TaskFormHandler, ProjectFormHandler, ExtendedTaskFormHandler };
+export { TaskFormHandler, ProjectFormHandler, FormCopyHandler };
