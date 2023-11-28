@@ -65,7 +65,6 @@ class TaskFormHandler extends Form {
 
 class FormCopyHandler extends Form {
   constructor(form, cHandler, projectID, taskID, modal) {
-    console.log("form taskid:", taskID);
     super(form, cHandler, projectID);
     this.taskID = taskID;
     this.modal = modal;

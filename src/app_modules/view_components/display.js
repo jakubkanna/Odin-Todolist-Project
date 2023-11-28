@@ -1,32 +1,63 @@
 import { createTabBtnSet, createProjectLIBtnSet } from "./buttons";
+
 function cleanDOM(element) {
   while (element.firstChild) {
     element.removeChild(element.firstChild);
   }
 }
-//
+
+class ElementFactory {
+  static createElement(
+    tag,
+    className,
+    attributeName,
+    attributeValue,
+    textContent
+  ) {
+    const element = document.createElement(tag);
+
+    if (className) {
+      element.classList.add(...className.split(" "));
+    }
+
+    if (attributeName && attributeValue !== null) {
+      element.setAttribute(attributeName, attributeValue);
+    }
+
+    if (textContent) {
+      element.textContent = textContent;
+    }
+
+    return element;
+  }
+}
+
 class Display {
   constructor(taskUL) {
     this.taskUL = taskUL;
   }
-  createElement(tag, className, attributeName, attributeValue) {
-    const element = document.createElement(tag);
-    element.classList.add(className);
-    element.setAttribute(attributeName, attributeValue);
-    return document.createElement(tag);
-  }
+
   displayInfo(element, project) {
     const div = document.querySelector(element);
-    const outerSpan = this.createElement("span");
+    const forText = "for ";
+    const outerSpan = ElementFactory.createElement(
+      "span",
+      null,
+      null,
+      null,
+      forText
+    );
 
-    const forText = document.createTextNode("for ");
-
-    const innerSpan = this.createElement("span");
-    innerSpan.textContent = project.title;
+    const innerSpan = ElementFactory.createElement(
+      "span",
+      null,
+      null,
+      null,
+      project.title
+    );
 
     const projectText = document.createTextNode(" project");
 
-    outerSpan.appendChild(forText);
     outerSpan.appendChild(innerSpan);
     outerSpan.appendChild(projectText);
 
@@ -46,40 +77,36 @@ class ProjectDisplay extends Display {
     if (activeProjectID !== undefined) {
       this.activeProject = projects.find((item) => item.id === activeProjectID);
     }
-    console.log(
-      "DISPLAY",
-      "actprojid:",
-      activeProjectID,
-      "actproj:",
-      this.activeProject
-    );
+
     projects.forEach((project) => {
-      // console.log(project);
-      const li = this.createElement("li");
-      li.classList.add("list-item");
-      //text
-      li.setAttribute("data-project-id", project.id);
-      const span = this.createElement("span");
+      const li = ElementFactory.createElement(
+        "li",
+        "list-item",
+        "data-project-id",
+        project.id
+      );
+
+      const span = ElementFactory.createElement("span");
       span.textContent = project.title;
       li.append(span);
 
-      //buttons
       const buttons = createProjectLIBtnSet();
 
       buttons.forEach((button) => {
         li.append(button.getElement());
       });
-      //append li element
+
       this.projectUL.append(li);
 
       displayTasksCallback(this.activeProject);
     });
   }
+
   displayProjects(projects, activeProjectID, displayTasksCallback) {
     cleanDOM(this.projectUL);
 
     if (projects.length === 0) {
-      const p = this.createElement("p");
+      const p = ElementFactory.createElement("p");
       p.textContent = "Empty";
       this.projectUL.append(p);
     } else {
@@ -98,32 +125,33 @@ class TaskDisplay extends Display {
     cleanDOM(this.taskUL);
 
     if (project.tasks.length === 0) {
-      const p = this.createElement("p");
+      const p = ElementFactory.createElement("p");
       p.textContent = "Empty";
       this.taskUL.append(p);
     } else {
       project.tasks.forEach((task) => {
-        const li = this.createElement("li");
+        const li = ElementFactory.createElement("li");
         li.classList.add("tab");
         li.setAttribute("data-project-id", project.id);
         li.setAttribute("data-task-id", task.id);
 
-        // Title
-        const titleSpan = this.createElement("span");
+        const titleSpan = ElementFactory.createElement("span");
         titleSpan.textContent = task.title;
         titleSpan.classList.add("tab-content-field");
         li.append(titleSpan);
 
-        // Date
-        const dateSpan = this.createElement("span");
-        dateSpan.textContent = task.date;
-        dateSpan.classList.add("tab-content-field", "date-field");
+        const dateSpan = ElementFactory.createElement(
+          "span",
+          "tab-content-field date-field",
+          null,
+          null,
+          task.date
+        );
 
         li.append(dateSpan);
 
-        // Settings
-        const settingsDiv = this.createElement("div");
-        const buttons = createTabBtnSet(); // Create a new set of buttons for each task
+        const settingsDiv = ElementFactory.createElement("div");
+        const buttons = createTabBtnSet();
         buttons.forEach((button) => {
           settingsDiv.append(button.getElement());
         });
@@ -131,8 +159,7 @@ class TaskDisplay extends Display {
 
         li.append(settingsDiv);
 
-        // Description
-        const descriptionDiv = this.createElement("span");
+        const descriptionDiv = ElementFactory.createElement("span");
         descriptionDiv.textContent = task.description;
         descriptionDiv.classList.add("tab-content-field");
 
