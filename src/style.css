@@ -131,7 +131,9 @@ table {
 /****************************************************************************************************************************  */
 
 /* colors */
-
+* {
+  box-sizing: content-box; /* or unset or initial */
+}
 :root {
   --light-black: #333333;
   --black: #1e1e1e;
@@ -215,6 +217,7 @@ html {
   width: 100%;
 }
 body {
+  width: 100%;
   max-width: 100%;
   min-height: 100%;
   display: grid;
@@ -269,7 +272,6 @@ aside {
   align-items: flex-start;
   gap: 24px;
   align-self: stretch;
-  box-sizing: border-box;
 }
 
 [class^="box-new-"] {
@@ -277,11 +279,10 @@ aside {
   flex-direction: column;
   gap: 12px;
   max-width: 100%;
-  box-sizing: border-box;
   padding: 24px;
   background-color: var(--white);
-  box-sizing: border-box;
   width: 100%;
+  box-sizing: border-box;
 }
 .box-wrapper {
   width: 100%;
@@ -303,9 +304,7 @@ aside {
 .new-tasks-window {
   display: grid;
   grid-template-columns: repeat(auto-fit, 50%);
-
   padding: 6px;
-  box-sizing: border-box;
   margin-bottom: 36px;
   @media (max-width: 1024px) {
     grid-template-columns: 100%; /* Set to 100% on mobile */
@@ -368,7 +367,6 @@ form {
   width: 100%;
 }
 input {
-  box-sizing: border-box;
   width: 100%;
 }
 input[type="radio"] {
