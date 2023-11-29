@@ -16,4 +16,4 @@ This Todo list application was created for educational purposes as part of The O
 
 # Live Preview
 
-soon
+[Todolist Page](https://jakubkanna.github.io/todolist)
