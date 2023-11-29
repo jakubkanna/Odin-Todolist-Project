@@ -1,4 +1,4 @@
-import { ToggleVisibilityBtn } from "./view_components/buttons";
+import { ToggleVisibilityBtn, PlusToggleBtn } from "./view_components/buttons";
 import { TaskFormHandler, ProjectFormHandler } from "./view_components/forms";
 import { ProjectDisplay, TaskDisplay } from "./view_components/display";
 import { ULHandler } from "./view_components/handlers";
@@ -21,8 +21,9 @@ export default class View {
     this.taskDisplay = new TaskDisplay(this.taskUL);
 
     // Toggle buttons
-    new ToggleVisibilityBtn(".new-project-button", ".box-new-project");
-    new ToggleVisibilityBtn(".new-task-button", ".box-new-task");
+    new PlusToggleBtn(".new-project-button", ".box-new-project");
+    new PlusToggleBtn(".new-task-button", ".box-new-task");
+    new ToggleVisibilityBtn("button.bi.bi-list", "aside");
   }
 
   displayProjectsAndTasks(projects, activeProjectID) {

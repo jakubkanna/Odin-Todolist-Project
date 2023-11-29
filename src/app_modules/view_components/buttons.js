@@ -43,31 +43,56 @@ class ToggleVisibilityBtn {
   constructor(button, box) {
     this.button = document.querySelector(button);
     this.box = document.body.querySelector(box);
-    this.isVisible = true;
-    this.hideWindow(); //hide by default
     this.button.addEventListener("click", () => {
       this.toggleWindow();
     });
   }
+
   toggleWindow() {
-    if (this.isVisible) {
-      this.hideWindow();
-    } else {
+    if (this.box.classList.contains("hidden")) {
       this.showWindow();
+    } else {
+      this.hideWindow();
     }
   }
+
   showWindow() {
-    this.button.closest("[class*='-window']").style.background =
-      "var(--light-purple)";
-
     this.box.style.display = "flex";
-    this.isVisible = true;
+    this.box.classList.remove("hidden");
+    this.box.classList.add("shown");
   }
-  hideWindow() {
-    this.button.closest("[class*='-window']").style.background = "";
 
+  hideWindow() {
     this.box.style.display = "none";
-    this.isVisible = false;
+    this.box.classList.remove("shown");
+    this.box.classList.add("hidden");
   }
 }
-export { createTabBtnSet, createProjectLIBtnSet, ToggleVisibilityBtn };
+
+class PlusToggleBtn extends ToggleVisibilityBtn {
+  constructor(button, box) {
+    super(button, box);
+    this.hideWindow(); // hide by default
+  }
+
+  showWindow() {
+    const windowElement = this.button.closest("[class*='-window']");
+    windowElement.style.background = "var(--light-purple)";
+
+    super.showWindow(); // Call the parent method to handle display and classes
+  }
+
+  hideWindow() {
+    const windowElement = this.button.closest("[class*='-window']");
+    windowElement.style.background = "";
+
+    super.hideWindow(); // Call the parent method to handle display and classes
+  }
+}
+
+export {
+  createTabBtnSet,
+  createProjectLIBtnSet,
+  ToggleVisibilityBtn,
+  PlusToggleBtn,
+};
