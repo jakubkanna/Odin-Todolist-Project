@@ -57,10 +57,15 @@ class ToggleVisibilityBtn {
     }
   }
   showWindow() {
-    this.box.style.display = "block";
+    this.button.closest("[class*='-window']").style.background =
+      "var(--light-purple)";
+
+    this.box.style.display = "flex";
     this.isVisible = true;
   }
   hideWindow() {
+    this.button.closest("[class*='-window']").style.background = "";
+
     this.box.style.display = "none";
     this.isVisible = false;
   }

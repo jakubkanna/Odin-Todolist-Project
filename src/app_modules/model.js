@@ -8,12 +8,16 @@ export default class Model {
 
   createDefault() {
     const project = new Project(0, "Default");
+    const lorem = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur
+    accusamus aperiam unde. Quos magni itaque distinctio consectetur
+    laboriosam corporis, unde temporibus in dolorem laudantium quo minus
+    quasi ducimus. Dolore, totam?`;
     const task = new Task(
       0,
       0,
       "Example Task",
       "01/01/2011",
-      "Lorem",
+      lorem,
       false,
       "no"
     );
@@ -139,7 +143,12 @@ export default class Model {
     const { task } = this.getTask(projectID, taskID);
 
     if (task) {
-      Object.assign(task, taskData);
+      Object.keys(taskData).forEach((key) => {
+        if (taskData[key] !== null) {
+          task[key] = taskData[key];
+        }
+      });
+
       this._commit();
     }
   }

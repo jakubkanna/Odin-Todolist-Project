@@ -21,8 +21,8 @@ export default class View {
     this.taskDisplay = new TaskDisplay(this.taskUL);
 
     // Toggle buttons
-    new ToggleVisibilityBtn(".new-project-button", ".new-projects-box");
-    new ToggleVisibilityBtn(".new-task-button", ".new-task-box");
+    new ToggleVisibilityBtn(".new-project-button", ".box-new-project");
+    new ToggleVisibilityBtn(".new-task-button", ".box-new-task");
   }
 
   displayProjectsAndTasks(projects, activeProjectID) {
@@ -54,7 +54,7 @@ export default class View {
     this.projectULHandler.createLiHandler.createEditHandler(
       cHandler,
       ".form-projects",
-      "#editModalOverlay"
+      "#editModalForm"
     );
   }
 
@@ -81,7 +81,7 @@ export default class View {
     this.taskULHandler.createLiHandler.createEditHandler(
       cHandler,
       ".form-tasks",
-      "#editModalOverlay"
+      "#editModalForm"
     );
   }
 }

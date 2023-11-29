@@ -90,10 +90,12 @@ class ProjectDisplay extends Display {
       span.textContent = project.title;
       li.append(span);
 
-      const buttons = createProjectLIBtnSet();
+      const wrapper = ElementFactory.createElement("div", "wrapper");
+      li.append(wrapper);
 
+      const buttons = createProjectLIBtnSet();
       buttons.forEach((button) => {
-        li.append(button.getElement());
+        wrapper.append(button.getElement());
       });
 
       this.projectUL.append(li);
@@ -135,14 +137,17 @@ class TaskDisplay extends Display {
         li.setAttribute("data-project-id", project.id);
         li.setAttribute("data-task-id", task.id);
 
-        const titleSpan = ElementFactory.createElement("span");
+        const titleSpan = ElementFactory.createElement(
+          "span",
+          "tab-content-field title"
+        );
         titleSpan.textContent = task.title;
-        titleSpan.classList.add("tab-content-field");
+
         li.append(titleSpan);
 
         const dateSpan = ElementFactory.createElement(
           "span",
-          "tab-content-field date-field",
+          "tab-content-field date",
           null,
           null,
           task.date
@@ -150,18 +155,22 @@ class TaskDisplay extends Display {
 
         li.append(dateSpan);
 
-        const settingsDiv = ElementFactory.createElement("div");
+        const settingsDiv = ElementFactory.createElement(
+          "div",
+          "tab-content-field settings"
+        );
         const buttons = createTabBtnSet();
         buttons.forEach((button) => {
           settingsDiv.append(button.getElement());
         });
-        settingsDiv.classList.add("tab-content-field");
 
         li.append(settingsDiv);
 
-        const descriptionDiv = ElementFactory.createElement("span");
+        const descriptionDiv = ElementFactory.createElement(
+          "span",
+          "tab-content-field description"
+        );
         descriptionDiv.textContent = task.description;
-        descriptionDiv.classList.add("tab-content-field");
 
         li.append(descriptionDiv);
 

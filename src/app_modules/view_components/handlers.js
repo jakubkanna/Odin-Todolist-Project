@@ -150,23 +150,31 @@ class Edit extends Action {
     this.buttonClass = "edit-btn";
     this.formSelector = formSelector;
     this.modalSelector = modalSelector;
+    this.modal = document.querySelector(modalSelector);
     this.container = container;
   }
 
   action(projectID, taskID) {
-    console.log("action for:", this.container);
-    // console.log("action:", taskID);
-    console.log("action proID:", projectID);
     const modal = new Modal(this.modalSelector);
     modal.show();
 
     const form = document.querySelector(this.formSelector);
     const formClone = form.cloneNode(true);
+
+    // Update formClone class
     formClone.classList.remove(this.formSelector.substring(1));
-    formClone.classList.add("edit-task_" + this.formSelector.substring(1));
+    formClone.classList.add(`edit-task_${this.formSelector.substring(1)}`);
 
-    modal.append(formClone);
+    // Clone and customize the task box
+    const boxClone = this.cloneAndCustomizeTaskBox;
 
+    // Append the task box clone to the modal
+    this.modal.append(boxClone);
+
+    // Append the form clone to the task box clone body
+    boxClone.querySelector(".box-body").append(formClone);
+
+    // Initialize FormCopyHandler
     const taskForm = new FormCopyHandler(
       formClone,
       this.handler,
@@ -174,6 +182,18 @@ class Edit extends Action {
       taskID,
       modal
     );
+  }
+
+  get cloneAndCustomizeTaskBox() {
+    const box = document.querySelector(".box-new-task");
+    const boxClone = box.cloneNode(true);
+    boxClone.style.display = "flex";
+    // Customize the task box clone
+    const boxCloneBody = boxClone.querySelector(".box-body");
+    boxClone.querySelector("form").remove();
+    boxClone.querySelector("h2").innerText = "Edit Task";
+
+    return boxClone;
   }
 }
 

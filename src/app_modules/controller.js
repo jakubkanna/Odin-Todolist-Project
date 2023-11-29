@@ -70,10 +70,10 @@ export default class Controller {
   handleEditTask = (projectID, formData, taskID) => {
     const [title, date, description, priority] = formData;
     const taskData = {
-      title: title || "",
-      date: date || "",
-      description: description || "",
-      priority: priority || "no",
+      title: title || null,
+      date: date || null,
+      description: description || null,
+      priority: priority || null,
     };
     this.model.editTask(projectID, taskID, taskData);
   };
