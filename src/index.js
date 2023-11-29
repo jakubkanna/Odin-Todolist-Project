@@ -9,6 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //What can be added?
-//burger icon func.
-//tasks filter by date
-
+//tasks wipe after 28 sec
+//active button state
+//ok and close button in forms need fix

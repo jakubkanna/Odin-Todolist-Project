@@ -72,21 +72,21 @@ class ToggleVisibilityBtn {
 class PlusToggleBtn extends ToggleVisibilityBtn {
   constructor(button, box) {
     super(button, box);
-    this.hideWindow(); // hide by default
+    this.hideWindow();
   }
 
   showWindow() {
     const windowElement = this.button.closest("[class*='-window']");
     windowElement.style.background = "var(--light-purple)";
 
-    super.showWindow(); // Call the parent method to handle display and classes
+    super.showWindow();
   }
 
   hideWindow() {
     const windowElement = this.button.closest("[class*='-window']");
     windowElement.style.background = "";
 
-    super.hideWindow(); // Call the parent method to handle display and classes
+    super.hideWindow();
   }
 }
 
